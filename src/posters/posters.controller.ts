@@ -1,7 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { PostersService } from './posters.service';
-import { ResponseDto } from 'src/common/response.dto';
+import { ResponseDto } from 'src/common/dto/response.dto';
 import { PostersDto } from './posters.dto';
+import { success } from 'src/common/utils/response.util';
 
 @Controller('posters')
 export class PostersController {
@@ -10,11 +11,7 @@ export class PostersController {
   @Get()
   getPosters(): ResponseDto<PostersDto> {
     const posters = this.postersService.findPosters();
-    return {
-      statusCode: 200,
-      message: 'Get poster list',
-      data: posters,
-    };
+    return success(posters, 'Get poster list');
   }
 
   @Get('filter')

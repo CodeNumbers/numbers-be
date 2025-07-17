@@ -2,7 +2,7 @@ export class PostersDto {
   id: number;
   url: string;
 
-  constructor(data: PostersDto) {
-    Object.assign(this, data);
+  constructor(posterData: PostersDto) {
+    Object.assign(this, posterData);
   }
 }
