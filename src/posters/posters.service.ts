@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PostersDto } from './posters.dto';
+import { PosterDto } from './posters.dto';
 
 @Injectable()
 export class PostersService {
-  findPosters(keyword: string): PostersDto {
+  findPosters(keyword: string): PosterDto {
     console.log(keyword);
-    return new PostersDto({ id: 1, url: 'poster.com' });
+    return new PosterDto({ id: 1, url: 'poster.com' });
   }
 }

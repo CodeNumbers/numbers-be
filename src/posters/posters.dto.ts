@@ -1,9 +1,8 @@
-export class PostersDto {
+export class PosterDto {
   id: number;
   url: string;
-  createdAt?: Date;
 
-  constructor(posterData: PostersDto) {
+  constructor(posterData: PosterDto) {
     Object.assign(this, posterData);
   }
 }
