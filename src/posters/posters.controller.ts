@@ -8,9 +8,9 @@ import { success } from 'src/common/utils/response.util';
 export class PostersController {
   constructor(private readonly postersService: PostersService) {}
 
-  @Get()
-  getPosters(): ResponseDto<PostersDto> {
-    const posters = this.postersService.findPosters();
+  @Get('search')
+  getPosters(@Query('keyword') keyword: string): ResponseDto<PostersDto> {
+    const posters = this.postersService.findPosters(keyword);
     return success(posters, 'Get poster list');
   }
 
