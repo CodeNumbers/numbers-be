@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    ports:
+      - '3306:3306'
+    env_file:
+      - .env.dev
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # volumes:
+    #   - mysql-data:/var/lib/mysql
+# volumes:
+#   mysql-data:
