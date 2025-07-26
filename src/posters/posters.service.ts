@@ -11,8 +11,8 @@ export class PostersService {
     private postersRepository: Repository<Poster>,
   ) {}
 
-  findPosters(keyword: string): PosterDto {
+  findPosters(keyword: string): PosterDto[] {
     console.log(keyword);
-    return new PosterDto({ id: 1, url: 'poster.com' });
+    return [new PosterDto({ id: 1, url: 'poster.com' })];
   }
 }

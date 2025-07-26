@@ -9,7 +9,7 @@ export class PostersController {
   constructor(private readonly postersService: PostersService) {}
 
   @Get('search')
-  getPosters(@Query('keyword') keyword: string): ResponseDto<PosterDto> {
+  getPosters(@Query('keyword') keyword: string): ResponseDto<PosterDto[]> {
     const posters = this.postersService.findPosters(keyword);
     return success(posters, 'Get poster list');
   }
