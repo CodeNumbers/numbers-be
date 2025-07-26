@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostersModule } from './posters/posters.module';
 import { DataSource } from 'typeorm';
+import { PostersModule } from './posters/posters.module';
 import { Poster } from './posters/poster.entity';
+import { MusicalsModule } from './musicals/musicals.module';
+import { Musical } from './musicals/musical.entity';
 
 @Module({
   imports: [
@@ -18,11 +20,12 @@ import { Poster } from './posters/poster.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Poster],
+      entities: [Poster, Musical],
       synchronize: true, // Shouldn't be used in production
     }),
     // Feature Modules
     PostersModule,
+    MusicalsModule,
   ],
   // controllers: [],
   // providers: [],

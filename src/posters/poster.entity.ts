@@ -5,9 +5,13 @@ export class Poster {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('text')
+  @Column('text', { name: 'image_url' })
   imageUrl: string;
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    name: 'created_at',
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   createdAt: Date;
 }
