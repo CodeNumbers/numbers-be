@@ -21,6 +21,7 @@ import { Musical } from './musicals/musical.entity';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       entities: [Poster, Musical],
+      charset: 'utf8mb4',
       synchronize: true, // Shouldn't be used in production
     }),
     // Feature Modules

@@ -17,7 +17,7 @@ export class Musical {
 
   @OneToOne(() => Poster, (poster) => poster.id, { nullable: false })
   @JoinColumn({ name: 'poster_id' })
-  posterId: Poster; // Foreign key
+  poster: Poster; // Foreign key
 
   @Column('text')
   synopsis: string;
