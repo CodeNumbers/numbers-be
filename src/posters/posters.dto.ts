@@ -1,6 +1,6 @@
 export class PosterDto {
   id: number;
-  url: string;
+  imageUrl: string;
 
   constructor(posterData: PosterDto) {
     Object.assign(this, posterData);

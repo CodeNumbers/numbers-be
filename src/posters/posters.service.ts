@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PosterDto } from './posters.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Poster } from './poster.entity';
 import { Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { PosterDto } from './posters.dto';
+import { Poster } from './poster.entity';
 
 @Injectable()
 export class PostersService {
@@ -11,8 +11,18 @@ export class PostersService {
     private postersRepository: Repository<Poster>,
   ) {}
 
-  findPosters(keyword: string): PosterDto[] {
-    console.log(keyword);
-    return [new PosterDto({ id: 1, url: 'poster.com' })];
+  async findPostersByKeyword(keyword: string): Promise<PosterDto[]> {
+    if (keyword === 'random') {
+      const posters = await this.postersRepository
+        .createQueryBuilder('poster')
+        .select(['poster.id', 'poster.imageUrl'])
+        .orderBy('RAND()')
+        .limit(5)
+        .getMany();
+      return posters.map((poster) => new PosterDto(poster));
+    } else {
+      // Based on views
+      return [new PosterDto({ id: 1, imageUrl: 'views on work' })];
+    }
   }
 }
