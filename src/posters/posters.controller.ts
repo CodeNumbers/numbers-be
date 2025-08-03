@@ -4,10 +4,7 @@ import { PosterDto } from './posters.dto';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { success, fail } from 'src/common/utils/response.util';
 import { isValidQuery } from 'src/common/utils/validation.util';
-import {
-  PosterSearchKeyword,
-  PosterFilterKeyword,
-} from 'src/common/enum/query-keyword';
+import { PosterSearchKeyword } from 'src/common/config/query-keyword';
 
 @Controller('posters')
 export class PostersController {
@@ -21,16 +18,6 @@ export class PostersController {
       return fail();
     }
     const posters = await this.postersService.findPostersByKeyword(keyword);
-    return success(posters, 'Get poster list');
-  }
-
-  @Get('filter')
-  filterPosters(
-    @Query('initialRange') initialRange: string,
-  ): ResponseDto<null> | string {
-    if (!isValidQuery(initialRange, PosterFilterKeyword)) {
-      return fail();
-    }
-    return initialRange;
+    return success(posters, 'Success to get poster list');
   }
 }
