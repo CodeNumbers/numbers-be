@@ -15,6 +15,9 @@ export class Musical {
   @Column({ type: 'varchar', length: 64, unique: true })
   title: string;
 
+  @Column({ type: 'char', name: 'first_choseong' })
+  firstChoseong: string;
+
   @OneToOne(() => Poster, (poster) => poster.id, { nullable: false })
   @JoinColumn({ name: 'poster_id' })
   poster: Poster; // Foreign key

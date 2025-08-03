@@ -1,13 +1,23 @@
 // Poster
-export enum PosterSearchKeyword {
-  VIEWS = 'views',
-  RANDOM = 'random',
-}
+export const PosterSearchKeyword = {
+  views: 'views',
+  random: 'random',
+};
 
-export enum PosterFilterKeyword {
-  G_D = 'ㄱ~ㄷ',
-  R_M = 'ㄹ~ㅂ',
-  S_J = 'ㅅ~ㅈ',
-  C_T = 'ㅊ~ㅌ',
-  P_H = 'ㅍ~ㅎ',
-}
+export const PosterFilterKeyword = {
+  'ㄱ~ㄷ': 'ㄱ~ㄷ',
+  'ㄹ~ㅂ': 'ㄹ~ㅂ',
+  'ㅅ~ㅈ': 'ㅅ~ㅈ',
+  'ㅊ~ㅌ': 'ㅊ~ㅌ',
+  'ㅍ~ㅎ': 'ㅍ~ㅎ',
+  etc: 'A~Z/0~9',
+};
+
+export const filterMap = {
+  'ㄱ~ㄷ': ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ'],
+  'ㄹ~ㅁ': ['ㄹ', 'ㅁ'],
+  'ㅂ~ㅅ': ['ㅂ', 'ㅃ', 'ㅅ', 'ㅆ'],
+  'ㅇ~ㅈ': ['ㅇ', 'ㅈ', 'ㅉ'],
+  'ㅊ~ㅍ': ['ㅊ', 'ㅋ', 'ㅌ', 'ㅍ'],
+  etc: null,
+};
