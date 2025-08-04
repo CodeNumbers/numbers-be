@@ -6,7 +6,7 @@ services:
     ports:
       - '3306:3306'
     env_file:
-      - .env
+      - .env.db
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 10s
@@ -15,8 +15,20 @@ services:
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
-    # volumes:
-    #   - mysql-data:/var/lib/mysql
-
-# volumes:
-#   mysql-data:
+  nest_app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    container_name: nest_app
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env.development.local
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: >
+      sh -c "npm run seed && npm run start:dev"
