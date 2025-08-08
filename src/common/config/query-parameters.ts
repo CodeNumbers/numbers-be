@@ -19,5 +19,5 @@ export const ChoseongFilterMap: Record<string, string[]> = {
   'ㅅ~ㅈ': ['ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ'],
   'ㅊ~ㅌ': ['ㅊ', 'ㅋ', 'ㅌ'],
   'ㅍ~ㅎ': ['ㅍ', 'ㅎ'],
-  etc: ['-'],
+  'A~Z/0~9': ['-'],
 };

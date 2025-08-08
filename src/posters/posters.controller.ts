@@ -4,7 +4,7 @@ import { PosterDto } from './posters.dto';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { success, fail } from 'src/common/utils/response.util';
 import { isValidQuery } from 'src/common/utils/validation.util';
-import { PosterSearchKeyword } from 'src/common/config/query-keyword';
+import { PosterSearchKeyword } from 'src/common/config/query-parameters';
 
 @Controller('posters')
 export class PostersController {

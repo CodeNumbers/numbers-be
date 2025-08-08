@@ -3,7 +3,7 @@ import { MusicalsService } from './musicals.service';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { isValidQuery } from 'src/common/utils/validation.util';
 import { success, fail } from 'src/common/utils/response.util';
-import { PosterFilterKeyword } from 'src/common/config/query-keyword';
+import { PosterFilterKeyword } from 'src/common/config/query-parameters';
 import { MusicalDto } from './musicals.dto';
 
 @Controller('musicals')
