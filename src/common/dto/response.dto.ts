@@ -1,11 +1,17 @@
-export class ResponseDto<T> {
-  statusCode: number;
-  message: string;
-  data: T | null;
+import { ApiProperty } from '@nestjs/swagger';
 
-  constructor(statusCode: number, message: string, data: T) {
+export class ResponseDto<T> {
+  @ApiProperty()
+  statusCode: number;
+
+  @ApiProperty()
+  message: string;
+
+  data: T[];
+
+  constructor(statusCode: number, message: string, data: T[] | null = null) {
     this.statusCode = statusCode;
     this.message = message;
-    this.data = data;
+    if (data) this.data = data.slice();
   }
 }

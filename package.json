@@ -12,7 +12,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "db:up": "doker-compose -f docker-compose.dev.yaml up -d",
+    "db:up": "docker-compose -f docker-compose.dev.yaml up -d",
     "db:down": "docker-compose -f docker-compose.dev.yaml down",
     "db:logs": "docker-compose -f docker-compose.dev.yaml logs -f",
     "docker:up": "docker-compose -f docker-compose.prod.yaml up -d",

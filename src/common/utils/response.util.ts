@@ -1,7 +1,7 @@
 import { ResponseDto } from '../dto/response.dto';
 
 export function success<T>(
-  data: T,
+  data: T[],
   message = 'Success.',
   statusCode = 200,
 ): ResponseDto<T> {
