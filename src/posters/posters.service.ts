@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PosterDto } from './posters.dto';
 import { Poster } from './poster.entity';
+import { ChoseongFilterMap } from 'src/common/config/query-parameters';
 
 @Injectable()
 export class PostersService {
@@ -35,7 +36,7 @@ export class PostersService {
     }
   }
 
-  /* async findFilteredMusicals(initialRange: string): Promise<PosterDto[]> {
+  async findFilteredMusicals(initialRange: string): Promise<PosterDto[]> {
     const posters = await this.postersRepository
       .createQueryBuilder('poster')
       .leftJoinAndSelect('poster.musical', 'musical')
@@ -46,5 +47,5 @@ export class PostersService {
       .getMany();
 
     return posters.map((poster) => new PosterDto(poster));
-  } */
+  }
 }

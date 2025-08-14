@@ -13,7 +13,7 @@ import { success, fail } from 'src/common/utils/response.util';
 import { isValidQuery } from 'src/common/utils/validation.util';
 import {
   PosterSearchKeyword,
-  // PosterFilterKeyword,
+  PosterFilterKeyword,
 } from 'src/common/config/query-parameters';
 
 @Controller('posters')
@@ -64,7 +64,7 @@ export class PostersController {
     return success(posters, 'Success to get poster list.');
   }
 
-  /* @Get('filter')
+  @Get('filter')
   @ApiQuery({
     name: 'initialRange',
     enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
@@ -117,5 +117,5 @@ export class PostersController {
     const posters =
       await this.postersService.findFilteredMusicals(initialRange);
     return success(posters, 'Success to get filtered poster list.');
-  } */
+  }
 }
