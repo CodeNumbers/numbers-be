@@ -5,7 +5,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Actor } from './actor.entity';
 
 @Entity()
 export class MusicalNumber {
@@ -27,6 +30,20 @@ export class MusicalNumber {
 
   @Column({ name: 'video_url', type: 'varchar', length: 300 })
   videoUrl: string;
+
+  @ManyToMany(() => Actor, (actor) => actor.number)
+  @JoinTable({
+    name: 'performer',
+    joinColumn: {
+      name: 'musical_number_id', // 현재 엔티티 기준 FK 컬럼 이름
+      referencedColumnName: 'id', // Musical.id와 매핑
+    },
+    inverseJoinColumn: {
+      name: 'actor_id', // 상대 엔티티 기준 FK 컬럼 이름
+      referencedColumnName: 'id', // Actor.id와 매핑
+    },
+  })
+  actor: Actor[];
 
   @Column({
     name: 'created_at',

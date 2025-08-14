@@ -5,9 +5,12 @@ import {
   OneToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Poster } from 'src/common/entities/poster.entity';
 import { MusicalNumber } from 'src/common/entities/musical-number.entity';
+import { Actor } from './actor.entity';
 
 @Entity()
 export class Musical {
@@ -39,6 +42,20 @@ export class Musical {
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
+
+  @ManyToMany(() => Actor, (actor) => actor.musical)
+  @JoinTable({
+    name: 'participation',
+    joinColumn: {
+      name: 'musical_id', // 현재 엔티티 기준 FK 컬럼 이름
+      referencedColumnName: 'id', // Musical.id와 매핑
+    },
+    inverseJoinColumn: {
+      name: 'actor_id', // 상대 엔티티 기준 FK 컬럼 이름
+      referencedColumnName: 'id', // Actor.id와 매핑
+    },
+  })
+  actor: Actor[];
 
   @Column({
     name: 'updated_at',
