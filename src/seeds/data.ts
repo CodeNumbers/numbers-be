@@ -6,66 +6,66 @@ export const MusicalData: {
     // 0
     title: '알라딘',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Ftickets.interpark.com%2Fgoods%2F24012498&psig=AOvVaw09lKaHY2zqVxYouP1GtPCi&ust=1754101615838000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCMD8hu7H6I4DFQAAAAAdAAAAABAE',
+      'https://ticketimage.interpark.com/Play/image/large/24/24012498_p.gif',
   },
   {
     // 1
     title: '지킬앤하이드',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Ftickets.interpark.com%2Fgoods%2F24013928&psig=AOvVaw12G7txtRczdb-Xsv-Z33q3&ust=1754101823750000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCJDi5dDI6I4DFQAAAAAdAAAAABAE',
+      'https://ticketimage.interpark.com/Play/image/large/24/24013928_p.gif',
   },
   {
     // 2
     title: '데스노트',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2F%25EB%258D%25B0%25EC%258A%25A4%25EB%2585%25B8%25ED%258A%25B8%2528%25EB%25AE%25A4%25EC%25A7%2580%25EC%25BB%25AC%2529&psig=AOvVaw1dlv5sHgQ3UJVLFFV4FZhD&ust=1754101850594000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCMjnxN3I6I4DFQAAAAAdAAAAABAE',
+      'https://i.namu.wiki/i/6EK0dFBDfPBziWamXosVa6M-nkremQLlaA_6qGZ_I4YBEwb0gucAdf484kxjxLlPeaFzXhbHC3S_fXtYn0CFJIsR2fOescJQDu1u0HYZdflm2XfpboMGbaj29JdtmX2tLVtRebi_hGaAnlI85j39Eg.webp',
   },
   {
     // 3
     title: '프랑켄슈타인',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2F%25ED%2594%2584%25EB%259E%2591%25EC%25BC%2584%25EC%258A%2588%25ED%2583%2580%25EC%259D%25B8%2528%25EB%25AE%25A4%25EC%25A7%2580%25EC%25BB%25AC%2529&psig=AOvVaw1atLU3jdGIYVRALG6adC1p&ust=1754101922911000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCJCilIDJ6I4DFQAAAAAdAAAAABAE',
+      'https://i.namu.wiki/i/Y5iEAYRSRdnv_eWJw0Vv-WszNKKrP5PTdOtT7axhwMSPP0GrJm61kOrcDXfA1MYuTmLSJa7_7qmJvTu5qmEqEq39NeNd8_I9W10u2lTkxllen9nn_y7cdwo2_5-veRQJ_ut9iObuZKl-QmKvDOIIlQ.webp',
   },
   {
     // 4
     title: '하데스타운',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Ftickets.interpark.com%2Fgoods%2F24006851&psig=AOvVaw2yEeF8pQsUwGAbvCURVhY3&ust=1754101948638000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCOi5pIzJ6I4DFQAAAAAdAAAAABAE',
+      'https://ticketimage.interpark.com/Play/image/large/24/24006851_p.gif',
   },
   {
     // 5
     title: '웃는 남자',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2F%25EC%259B%2583%25EB%258A%2594%2520%25EB%2582%25A8%25EC%259E%2590%2528%25EB%25AE%25A4%25EC%25A7%2580%25EC%25BB%25AC%2529&psig=AOvVaw33F1KNeUvnCU19g_7hKf5B&ust=1754102032697000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCOiksLTJ6I4DFQAAAAAdAAAAABAE',
+      'https://i.namu.wiki/i/v16mNNr4hXk33fdhNczVLVezo52FbQOhCNWVAXewYFbBUJqVDjQaFVO7bzUhtuBIXRq6dDkP4y5Moz3b_x9DQCSM2OxxObKITv6GT-v8VaV8wzAvnXPsMC1R1Y9b71rM6Gjoo-qAKkjmGNoGhlwMfg.webp',
   },
   {
     // 6
     title: '스토리 오브 마이 라이프',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.doosanartcenter.com%2Fko%2Fperformance%2F1533&psig=AOvVaw2wHf49W6-ULpptSmLDLTDg&ust=1754102141380000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCMjhnOjJ6I4DFQAAAAAdAAAAABAE',
+      'https://www.doosanartcenter.com/upload/contentsImage/23092714074648862148.jpg',
   },
   {
     // 7
     title: '위키드',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2F%25EC%259C%2584%25ED%2582%25A4%25EB%2593%259C%2528%25EB%25AE%25A4%25EC%25A7%2580%25EC%25BB%25AC%2529&psig=AOvVaw2Ts0CcLMkCAerZS2EG0gmz&ust=1754102189008000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCOD89f7J6I4DFQAAAAAdAAAAABAE',
+      'https://i.namu.wiki/i/oInSwEzk81cFlym1OeubG99q8y8Febd3-eXVi5QiFIzzvGlQEF0AB3OmhiRAxUud_t-pjdYmzTZlR8iYhHaM9T92zrc-V3QUEDbc36CXOhubKPybVohEhr4b-bOCbFFMSiaLN6bh3P6P7bGBBai5Bw.webp',
   },
   {
     // 8
     title: '레베카',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2F%25EB%25A0%2588%25EB%25B2%25A0%25EC%25B9%25B4%2528%25EB%25AE%25A4%25EC%25A7%2580%25EC%25BB%25AC%2529&psig=AOvVaw0KzByBnyNx6UHBlrCu3ype&ust=1754102210883000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCLCKrInK6I4DFQAAAAAdAAAAABAE',
+      'https://i.namu.wiki/i/vn3g_JTaVGVHpZsiskl2sKgSh9og4d3XIYOOFj96pCRSM7_WMOIRnhcvNK9vk3d1ETlbkZzqa81ArfHMG-LKDW9Ys4rJ37JdQ3dx3kYohvWK_vyCu9cogILI65zwN9dut680EPCArcd28dANXDkI3A.webp',
   },
   {
     // 9
     title: '어쩌면 해피엔딩',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2F%25EC%2596%25B4%25EC%25A9%258C%25EB%25A9%25B4%2520%25ED%2595%25B4%25ED%2594%25BC%25EC%2597%2594%25EB%2594%25A9&psig=AOvVaw2JmDf-DRslPMvMYGHxEV9R&ust=1754102240393000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCOiCtpfK6I4DFQAAAAAdAAAAABAE',
+      'https://i.namu.wiki/i/BlJvgFK5-TUJufPFIIRsreopqhhigFVzMZ55E00DCjiVY0WbqbYeX61J5aEHZ2DeRaAma6T0QDsyUxrDw0oRgPs7lJtqRCZpsLCGRgCoellvkBI1az_wZHiMC9TDsj_zNu-sHC_dtZkV5N_Zl7_x5w.webp',
   },
   {
     // 10
     title: '영웅',
     imageUrl:
-      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.lgart.com%2Fproduct%2Fperformance%2F252732&psig=AOvVaw2srZVuDtnmQ7YJGN2C1DIC&ust=1754102276840000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCKCD26nK6I4DFQAAAAAdAAAAABAE',
+      'https://www.lgart.com/Down/Perf/202210/%ED%8F%AC%EC%8A%A4%ED%84%B0_2.jpg',
   },
 ];
