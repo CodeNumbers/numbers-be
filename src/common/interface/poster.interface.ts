@@ -3,5 +3,8 @@ export interface Poster {
 
   imageUrl: string;
 
-  createdAt: Date;
+  musical: {
+    id: number;
+    title: string;
+  };
 }

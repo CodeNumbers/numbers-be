@@ -15,14 +15,36 @@ export class PostersService {
     if (keyword === 'random') {
       const posters = await this.postersRepository
         .createQueryBuilder('poster')
-        .select(['poster.id', 'poster.imageUrl'])
+        .leftJoinAndSelect('poster.musical', 'musical')
+        .select(['musical.id', 'musical.title', 'poster.imageUrl'])
         .orderBy('RAND()')
         .limit(5)
         .getMany();
       return posters.map((poster) => new PosterDto(poster));
     } else {
       // Based on views
-      return [new PosterDto({ id: 1, imageUrl: 'views on work' })];
+      const posters = await this.postersRepository
+        .createQueryBuilder('poster')
+        .leftJoinAndSelect('poster.musical', 'musical')
+        .select(['musical.id', 'musical.title', 'poster.imageUrl'])
+        .orderBy('musical.views', 'DESC')
+        .orderBy('musical.id', 'ASC')
+        .limit(5)
+        .getMany();
+      return posters.map((poster) => new PosterDto(poster));
     }
   }
+
+  /* async findFilteredMusicals(initialRange: string): Promise<PosterDto[]> {
+    const posters = await this.postersRepository
+      .createQueryBuilder('poster')
+      .leftJoinAndSelect('poster.musical', 'musical')
+      .select(['musical.id', 'musical.title', 'poster.imageUrl'])
+      .where('musical.firstChoseong IN (:...choseongGroup)', {
+        choseongGroup: ChoseongFilterMap[initialRange],
+      })
+      .getMany();
+
+    return posters.map((poster) => new PosterDto(poster));
+  } */
 }

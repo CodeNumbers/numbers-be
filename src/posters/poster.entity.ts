@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Musical } from 'src/musicals/musical.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 
 @Entity()
 export class Poster {
@@ -14,4 +15,8 @@ export class Poster {
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
+
+  // 양방향 1:1
+  @OneToOne(() => Musical, (musical) => musical.poster)
+  musical: Musical;
 }
