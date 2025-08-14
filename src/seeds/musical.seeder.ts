@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
-import { Poster } from '../posters/poster.entity';
-import { Musical } from '../musicals/musical.entity';
+import { Poster } from '../common/entities/poster.entity';
+import { Musical } from '../common/entities/musical.entity';
 import { MusicalData } from './data';
 import { getFirstChoseong } from 'src/common/utils/choseong';
 

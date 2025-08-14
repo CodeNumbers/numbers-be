@@ -1,5 +1,5 @@
-import { Musical } from 'src/musicals/musical.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import { Musical } from 'src/common/entities/musical.entity';
 
 @Entity()
 export class Poster {

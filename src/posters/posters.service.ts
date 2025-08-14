@@ -2,7 +2,7 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PosterDto } from './posters.dto';
-import { Poster } from './poster.entity';
+import { Poster } from '../common/entities/poster.entity';
 import { ChoseongFilterMap } from 'src/common/config/query-parameters';
 
 @Injectable()

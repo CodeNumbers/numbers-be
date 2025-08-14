@@ -3,9 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { PostersModule } from './posters/posters.module';
-import { Poster } from './posters/poster.entity';
 import { MusicalsModule } from './musicals/musicals.module';
-import { Musical } from './musicals/musical.entity';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -20,7 +19,7 @@ import { Musical } from './musicals/musical.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Poster, Musical],
+      entities: [join(__dirname, '**/*.entity.{ts,js}')],
       charset: 'utf8mb4',
       synchronize: true, // Shouldn't be used in production
     }),

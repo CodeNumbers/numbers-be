@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Poster } from 'src/common/interface/poster.interface';
+import { PosterProps } from 'src/common/interface/poster.interface';
 
 export class MusicalDto {
   @ApiProperty()
@@ -9,7 +9,7 @@ export class MusicalDto {
   title: string;
 
   @ApiProperty()
-  poster: Poster;
+  poster: PosterProps;
 
   constructor(musicalData: MusicalDto) {
     Object.assign(this, musicalData);

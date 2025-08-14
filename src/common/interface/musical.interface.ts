@@ -1,11 +1,11 @@
-import { Poster } from './poster.interface';
+import { PosterProps } from './poster.interface';
 
 export interface Musical {
   id: number;
 
   title: string;
 
-  poster: Poster;
+  poster: PosterProps;
 
   synopsis: string;
 

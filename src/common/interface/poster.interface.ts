@@ -1,4 +1,4 @@
-export interface Poster {
+export interface PosterProps {
   id: number;
 
   imageUrl: string;
