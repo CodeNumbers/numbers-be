@@ -75,11 +75,53 @@ export class MusicalsController {
   }
 
   @Get(':id')
+  @ApiExtraModels(MusicalDto)
+  @ApiOkResponse({
+    description: 'Success to get musical information by ID.',
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseDto) },
+        {
+          properties: {
+            data: {
+              items: { $ref: getSchemaPath(MusicalDto) },
+            },
+          },
+          example: {
+            statusCode: 200,
+            message: 'Success to get musical information by ID.',
+            data: {
+              title: 'title',
+              synopsis: 'synopsis',
+              imageUrl: 'http://imageUrl.com',
+              numbers: [
+                {
+                  act: 1,
+                  order: 1,
+                  title: 'title1',
+                  videoUrl: 'https://example.com/video1',
+                  actors: ['A', 'B'],
+                },
+                {
+                  act: 2,
+                  order: 6,
+                  title: 'title2',
+                  videoUrl: 'https://example.com/video2',
+                  actors: ['C'],
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Musical not found.' })
   async getMusicalInformationWithId(
     @Param('id') id: string,
   ): Promise<ResponseDto<MusicalDto | null>> {
-    if (isNaN(Number(id))) return fail(400, 'Bad Request');
+    if (isNaN(Number(id))) return fail(400, 'Bad Request.');
 
     const musical = await this.musicalsService.findMusicalById(Number(id));
 
