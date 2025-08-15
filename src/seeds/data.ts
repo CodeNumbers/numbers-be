@@ -1,9 +1,9 @@
-import { NumberProps } from 'src/common/types/number';
+import { MusicalNumberProps } from 'src/common/interface/musical-number.interface';
 
 export const MusicalData: {
   title: string;
   imageUrl: string;
-  numbers?: NumberProps[];
+  numbers?: MusicalNumberProps[];
 }[] = [
   {
     // 0

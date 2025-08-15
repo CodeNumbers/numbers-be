@@ -10,11 +10,11 @@ export class Actor {
   @Column({ type: 'varchar', length: 16, unique: true })
   name: string;
 
-  @ManyToMany(() => Musical, (musical) => musical.actor)
+  @ManyToMany(() => Musical, (musical) => musical.actors)
   musical: Musical[];
 
-  @ManyToMany(() => MusicalNumber, (musicalNumber) => musicalNumber.actor)
-  number: MusicalNumber[];
+  @ManyToMany(() => MusicalNumber, (musicalNumber) => musicalNumber.actors)
+  numbers: MusicalNumber[];
 
   @Column({
     name: 'created_at',

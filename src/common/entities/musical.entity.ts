@@ -48,7 +48,7 @@ export class Musical {
       referencedColumnName: 'id', // Actor.id와 매핑
     },
   })
-  actor: Actor[];
+  actors: Actor[];
 
   @Column({
     name: 'created_at',

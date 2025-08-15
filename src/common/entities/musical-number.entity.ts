@@ -31,7 +31,7 @@ export class MusicalNumber {
   @Column({ name: 'video_url', type: 'varchar', length: 300, unique: true })
   videoUrl: string;
 
-  @ManyToMany(() => Actor, (actor) => actor.number)
+  @ManyToMany(() => Actor, (actor) => actor.numbers)
   @JoinTable({
     name: 'performer',
     joinColumn: {
@@ -43,7 +43,7 @@ export class MusicalNumber {
       referencedColumnName: 'id', // Actor.id와 매핑
     },
   })
-  actor: Actor[];
+  actors: Actor[];
 
   @Column({
     name: 'created_at',

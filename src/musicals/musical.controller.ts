@@ -79,6 +79,8 @@ export class MusicalsController {
   async getMusicalInformationWithId(
     @Param('id') id: string,
   ): Promise<ResponseDto<MusicalDto | null>> {
+    if (isNaN(Number(id))) return fail(400, 'Bad Request');
+
     const musical = await this.musicalsService.findMusicalById(Number(id));
 
     if (!musical) return fail(404, 'Musical not found');

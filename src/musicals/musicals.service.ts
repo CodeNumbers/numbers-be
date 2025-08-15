@@ -33,7 +33,7 @@ export class MusicalsService {
       .createQueryBuilder('musical')
       .leftJoin('musical.poster', 'poster')
       .leftJoin('musical.numbers', 'number')
-      .leftJoin('number.actor', 'actor')
+      .leftJoin('number.actors', 'actor')
       .select([
         'musical.title',
         'musical.synopsis',
