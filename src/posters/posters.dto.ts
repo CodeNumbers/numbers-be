@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Poster } from 'src/common/interface/poster.interface';
+import { PosterProps } from 'src/common/interface/poster.interface';
 
 export class PosterDto {
   @ApiProperty()
@@ -11,7 +11,7 @@ export class PosterDto {
   @ApiProperty()
   imageUrl: string;
 
-  constructor(posterData: Poster) {
+  constructor(posterData: PosterProps) {
     this.musicalId = posterData.musical.id;
     this.title = posterData.musical.title;
     this.imageUrl = posterData.imageUrl;

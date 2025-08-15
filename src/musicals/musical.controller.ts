@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOkResponse,
-  // ApiOperation,
+  ApiOperation,
   ApiQuery,
   ApiResponse,
   getSchemaPath,
@@ -19,7 +19,7 @@ export class MusicalsController {
   constructor(private readonly musicalsService: MusicalsService) {}
 
   @Get('filter')
-  // @ApiOperation({ deprecated: true })
+  @ApiOperation({ deprecated: true })
   @ApiQuery({
     name: 'initialRange',
     enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],

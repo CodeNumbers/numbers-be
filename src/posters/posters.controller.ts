@@ -13,7 +13,7 @@ import { success, fail } from 'src/common/utils/response.util';
 import { isValidQuery } from 'src/common/utils/validation.util';
 import {
   PosterSearchKeyword,
-  // PosterFilterKeyword,
+  PosterFilterKeyword,
 } from 'src/common/config/query-parameters';
 
 @Controller('posters')
@@ -21,7 +21,7 @@ export class PostersController {
   constructor(private readonly postersService: PostersService) {}
 
   @Get('search')
-  @ApiQuery({ name: 'keyword', enum: ['random', 'views'] })
+  @ApiQuery({ name: 'select', enum: ['random', 'views'] })
   @ApiExtraModels(ResponseDto, PosterDto)
   @ApiOkResponse({
     description: 'Success to get poster list.',
@@ -55,16 +55,16 @@ export class PostersController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   async getPosters(
-    @Query('keyword') keyword: string,
+    @Query('select') select: string,
   ): Promise<ResponseDto<PosterDto | null>> {
-    if (!isValidQuery(keyword, PosterSearchKeyword)) {
+    if (!isValidQuery(select, PosterSearchKeyword)) {
       return fail();
     }
-    const posters = await this.postersService.findPostersByKeyword(keyword);
+    const posters = await this.postersService.findPostersByKeyword(select);
     return success(posters, 'Success to get poster list.');
   }
 
-  /* @Get('filter')
+  @Get('filter')
   @ApiQuery({
     name: 'initialRange',
     enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
@@ -117,5 +117,5 @@ export class PostersController {
     const posters =
       await this.postersService.findFilteredMusicals(initialRange);
     return success(posters, 'Success to get filtered poster list.');
-  } */
+  }
 }

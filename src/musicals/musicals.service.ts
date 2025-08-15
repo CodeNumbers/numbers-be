@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Musical } from './musical.entity';
+import { Musical } from '../common/entities/musical.entity';
 import { ChoseongFilterMap } from 'src/common/config/query-parameters';
 import { MusicalDto } from './musicals.dto';
 

@@ -2,7 +2,8 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PosterDto } from './posters.dto';
-import { Poster } from './poster.entity';
+import { Poster } from '../common/entities/poster.entity';
+import { ChoseongFilterMap } from 'src/common/config/query-parameters';
 
 @Injectable()
 export class PostersService {
@@ -11,8 +12,8 @@ export class PostersService {
     private postersRepository: Repository<Poster>,
   ) {}
 
-  async findPostersByKeyword(keyword: string): Promise<PosterDto[]> {
-    if (keyword === 'random') {
+  async findPostersByKeyword(select: string): Promise<PosterDto[]> {
+    if (select === 'random') {
       const posters = await this.postersRepository
         .createQueryBuilder('poster')
         .leftJoinAndSelect('poster.musical', 'musical')
@@ -35,7 +36,7 @@ export class PostersService {
     }
   }
 
-  /* async findFilteredMusicals(initialRange: string): Promise<PosterDto[]> {
+  async findFilteredMusicals(initialRange: string): Promise<PosterDto[]> {
     const posters = await this.postersRepository
       .createQueryBuilder('poster')
       .leftJoinAndSelect('poster.musical', 'musical')
@@ -45,6 +46,17 @@ export class PostersService {
       })
       .getMany();
 
-    return posters.map((poster) => new PosterDto(poster));
-  } */
+    let postersInDto = posters.map((poster) => new PosterDto(poster));
+    postersInDto = this.sortKoreanAsc(postersInDto);
+
+    return postersInDto;
+  }
+
+  sortKoreanAsc(arr: PosterDto[]): PosterDto[] {
+    return arr.sort((poster1, poster2) => {
+      const title1 = poster1.title;
+      const title2 = poster2.title;
+      return title1.localeCompare(title2, 'ko');
+    });
+  }
 }

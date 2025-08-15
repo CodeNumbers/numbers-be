@@ -1,36 +1,98 @@
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
-import { Poster } from '../posters/poster.entity';
-import { Musical } from '../musicals/musical.entity';
-import { MusicalData } from './data';
+import { Poster } from '../common/entities/poster.entity';
+import { Musical } from '../common/entities/musical.entity';
+import { MusicalNumber } from 'src/common/entities/musical-number.entity';
+import { Actor } from 'src/common/entities/actor.entity';
 import { getFirstChoseong } from 'src/common/utils/choseong';
+import { MusicalData, NumberProps } from './data';
 
 @Injectable()
 export class MusicalSeeder {
-  constructor(private readonly dataSource: DataSource) {}
+  posterRepo: Repository<Poster>;
+  musicalRepo: Repository<Musical>;
+  musicalNumberRepo: Repository<MusicalNumber>;
+  actorRepo: Repository<Actor>;
+
+  constructor(private readonly dataSource: DataSource) {
+    this.posterRepo = this.dataSource.getRepository(Poster);
+    this.musicalRepo = this.dataSource.getRepository(Musical);
+    this.musicalNumberRepo = this.dataSource.getRepository(MusicalNumber);
+    this.actorRepo = this.dataSource.getRepository(Actor);
+  }
 
   async seed(count = 10) {
-    const posterRepo = this.dataSource.getRepository(Poster);
-    const musicalRepo = this.dataSource.getRepository(Musical);
-
-    for (let i = 0; i < count; i++) {
-      const title = MusicalData[i].title;
+    for (let index = 0; index < count; index++) {
+      const title = MusicalData[index].title;
       const firstChoseong = getFirstChoseong(title);
-      const imageUrl = MusicalData[i].imageUrl;
+      const imageUrl = MusicalData[index].imageUrl;
       const synopsis = faker.lorem.paragraph();
 
-      const poster = posterRepo.create({ imageUrl });
-      await posterRepo.save(poster);
-      const musical = musicalRepo.create({
+      // Insert Poster
+      const posterInstance = this.posterRepo.create({ imageUrl });
+      await this.posterRepo.save(posterInstance);
+
+      // Insert Musical
+      const musicalInstance = this.musicalRepo.create({
         title,
         firstChoseong,
         synopsis,
-        poster,
+        poster: posterInstance,
       });
-      await musicalRepo.save(musical);
+      await this.musicalRepo.save(musicalInstance);
+
+      // Insert Musical Number & Actor: "데스노트"
+      if (!index) {
+        const numbers = MusicalData[0].numbers;
+
+        await this.seedActData(numbers!.act1, 1, musicalInstance);
+        await this.seedActData(numbers!.act2, 2, musicalInstance);
+      }
     }
 
-    console.log(`✅ ${count} musicals with posters inserted.`);
+    console.log(`✅ ${count} seed data inserted.`);
+  }
+
+  async seedActData(
+    numbers: NumberProps[],
+    act: number,
+    musicalInstance: Musical,
+  ) {
+    for (let index = 0; index < numbers.length; index++) {
+      const order = numbers[index].order;
+      const title = numbers[index].title;
+      const actors = numbers[index].actors;
+      const videoUrl = numbers[index].videoUrl;
+
+      const musicalNumberInstance = this.musicalNumberRepo.create({
+        act,
+        musical: musicalInstance,
+        order,
+        title,
+        videoUrl,
+      });
+      await this.musicalNumberRepo.save(musicalNumberInstance);
+
+      // Many-to-Many 연결
+      musicalNumberInstance.actor = await this.seedActors(actors);
+      await this.musicalNumberRepo.save(musicalNumberInstance);
+    }
+  }
+
+  async seedActors(actors: string[]) {
+    // actors 배열에서 Actor 엔티티 가져오기 또는 생성
+    const actorInstances = await Promise.all(
+      actors.map(async (name: string) => {
+        let actor = await this.actorRepo.findOne({ where: { name } });
+        if (!actor) {
+          actor = this.actorRepo.create({ name });
+          await this.actorRepo.save(actor);
+        }
+        return actor;
+      }),
+    );
+
+    return actorInstances;
   }
 }
