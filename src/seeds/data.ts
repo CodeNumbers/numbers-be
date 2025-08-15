@@ -1,61 +1,52 @@
-export type Act = {
-  act1: NumberProps[];
-  act2: NumberProps[];
-};
-
-export type NumberProps = {
-  title: string;
-  order: number;
-  videoUrl: string;
-  actors: string[];
-};
+import { NumberProps } from 'src/common/types/number';
 
 export const MusicalData: {
   title: string;
   imageUrl: string;
-  numbers?: Act;
+  numbers?: NumberProps[];
 }[] = [
   {
     // 0
     title: '데스노트',
     imageUrl:
       'https://i.namu.wiki/i/6EK0dFBDfPBziWamXosVa6M-nkremQLlaA_6qGZ_I4YBEwb0gucAdf484kxjxLlPeaFzXhbHC3S_fXtYn0CFJIsR2fOescJQDu1u0HYZdflm2XfpboMGbaj29JdtmX2tLVtRebi_hGaAnlI85j39Eg.webp',
-    numbers: {
-      act1: [
-        {
-          order: 1,
-          title: '정의는 어디에?',
-          videoUrl: 'https://youtu.be/xNT5hhm7_so',
-          actors: ['한지상'],
-        },
-        {
-          order: 2,
-          title: '불쌍한 인간',
-          videoUrl: 'https://youtu.be/bFNAKvNY33w',
-          actors: ['박혜나', '강홍석'],
-        },
-        {
-          order: 4,
-          title: '데스노트',
-          videoUrl: 'https://youtu.be/rrI7tOhoVzA',
-          actors: ['홍광호'],
-        },
-      ],
-      act2: [
-        {
-          order: 17,
-          title: '죽음의 게임',
-          videoUrl: 'https://youtu.be/M21WzeO7uD4',
-          actors: ['고은성', '김준수', '케이'],
-        },
-        {
-          order: 22,
-          title: '놈의 마음속으로',
-          videoUrl: 'https://youtu.be/mPxFLpdw-44',
-          actors: ['한지상', '김준수'],
-        },
-      ],
-    },
+    numbers: [
+      {
+        act: 1,
+        order: 1,
+        title: '정의는 어디에?',
+        videoUrl: 'https://youtu.be/xNT5hhm7_so',
+        actors: ['한지상'],
+      },
+      {
+        act: 1,
+        order: 2,
+        title: '불쌍한 인간',
+        videoUrl: 'https://youtu.be/bFNAKvNY33w',
+        actors: ['박혜나', '강홍석'],
+      },
+      {
+        act: 1,
+        order: 4,
+        title: '데스노트',
+        videoUrl: 'https://youtu.be/rrI7tOhoVzA',
+        actors: ['홍광호'],
+      },
+      {
+        act: 2,
+        order: 17,
+        title: '죽음의 게임',
+        videoUrl: 'https://youtu.be/M21WzeO7uD4',
+        actors: ['고은성', '김준수', '케이'],
+      },
+      {
+        act: 2,
+        order: 22,
+        title: '놈의 마음속으로',
+        videoUrl: 'https://youtu.be/mPxFLpdw-44',
+        actors: ['한지상', '김준수'],
+      },
+    ],
   },
   {
     // 1

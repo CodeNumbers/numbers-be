@@ -1,17 +1,12 @@
+import { MusicalNumberProps } from './musical-number.interface';
 import { PosterProps } from './poster.interface';
 
-export interface Musical {
-  id: number;
-
+export interface MusicalProps {
   title: string;
-
-  firstChoseong: string;
 
   poster: PosterProps;
 
   synopsis: string;
 
-  views: number;
-
-  createdAt: Date;
+  numbers: MusicalNumberProps[];
 }
