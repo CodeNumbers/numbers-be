@@ -36,13 +36,6 @@ export class Musical {
   @Column({ default: 0 })
   views: number;
 
-  @Column({
-    name: 'created_at',
-    type: 'datetime',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt: Date;
-
   @ManyToMany(() => Actor, (actor) => actor.musical)
   @JoinTable({
     name: 'participation',
@@ -55,7 +48,14 @@ export class Musical {
       referencedColumnName: 'id', // Actor.id와 매핑
     },
   })
-  actor: Actor[];
+  actors: Actor[];
+
+  @Column({
+    name: 'created_at',
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  createdAt: Date;
 
   @Column({
     name: 'updated_at',

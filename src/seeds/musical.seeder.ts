@@ -6,7 +6,8 @@ import { Musical } from '../common/entities/musical.entity';
 import { MusicalNumber } from 'src/common/entities/musical-number.entity';
 import { Actor } from 'src/common/entities/actor.entity';
 import { getFirstChoseong } from 'src/common/utils/choseong';
-import { MusicalData, NumberProps } from './data';
+import { MusicalData } from './data';
+import { MusicalNumberProps } from 'src/common/interface/musical-number.interface';
 
 @Injectable()
 export class MusicalSeeder {
@@ -44,22 +45,16 @@ export class MusicalSeeder {
 
       // Insert Musical Number & Actor: "데스노트"
       if (!index) {
-        const numbers = MusicalData[0].numbers;
-
-        await this.seedActData(numbers!.act1, 1, musicalInstance);
-        await this.seedActData(numbers!.act2, 2, musicalInstance);
+        await this.seedActData(MusicalData[0].numbers!, musicalInstance);
       }
     }
 
     console.log(`✅ ${count} seed data inserted.`);
   }
 
-  async seedActData(
-    numbers: NumberProps[],
-    act: number,
-    musicalInstance: Musical,
-  ) {
+  async seedActData(numbers: MusicalNumberProps[], musicalInstance: Musical) {
     for (let index = 0; index < numbers.length; index++) {
+      const act = numbers[index].act;
       const order = numbers[index].order;
       const title = numbers[index].title;
       const actors = numbers[index].actors;
@@ -75,7 +70,7 @@ export class MusicalSeeder {
       await this.musicalNumberRepo.save(musicalNumberInstance);
 
       // Many-to-Many 연결
-      musicalNumberInstance.actor = await this.seedActors(actors);
+      musicalNumberInstance.actors = await this.seedActors(actors);
       await this.musicalNumberRepo.save(musicalNumberInstance);
     }
   }

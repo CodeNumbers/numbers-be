@@ -16,8 +16,8 @@ export class PostersService {
     if (select === 'random') {
       const posters = await this.postersRepository
         .createQueryBuilder('poster')
-        .leftJoinAndSelect('poster.musical', 'musical')
         .select(['musical.id', 'musical.title', 'poster.imageUrl'])
+        .leftJoin('poster.musical', 'musical')
         .orderBy('RAND()')
         .limit(5)
         .getMany();
@@ -26,8 +26,8 @@ export class PostersService {
       // Based on views
       const posters = await this.postersRepository
         .createQueryBuilder('poster')
-        .leftJoinAndSelect('poster.musical', 'musical')
         .select(['musical.id', 'musical.title', 'poster.imageUrl'])
+        .leftJoin('poster.musical', 'musical')
         .orderBy('musical.views', 'DESC')
         .orderBy('musical.id', 'ASC')
         .limit(5)
@@ -39,8 +39,8 @@ export class PostersService {
   async findFilteredMusicals(initialRange: string): Promise<PosterDto[]> {
     const posters = await this.postersRepository
       .createQueryBuilder('poster')
-      .leftJoinAndSelect('poster.musical', 'musical')
       .select(['musical.id', 'musical.title', 'poster.imageUrl'])
+      .leftJoin('poster.musical', 'musical')
       .where('musical.firstChoseong IN (:...choseongGroup)', {
         choseongGroup: ChoseongFilterMap[initialRange],
       })

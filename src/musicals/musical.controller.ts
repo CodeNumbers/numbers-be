@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOkResponse,
@@ -12,7 +12,7 @@ import { ResponseDto } from 'src/common/dto/response.dto';
 import { isValidQuery } from 'src/common/utils/validation.util';
 import { success, fail } from 'src/common/utils/response.util';
 import { PosterFilterKeyword } from 'src/common/config/query-parameters';
-import { MusicalDto } from './musicals.dto';
+import { MusicalDto, MusicalPosterDto } from './musicals.dto';
 
 @Controller('musicals')
 export class MusicalsController {
@@ -24,7 +24,7 @@ export class MusicalsController {
     name: 'initialRange',
     enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
   })
-  @ApiExtraModels(ResponseDto, MusicalDto)
+  @ApiExtraModels(ResponseDto, MusicalPosterDto)
   @ApiOkResponse({
     description: 'Success to get filtered poster list.',
     schema: {
@@ -34,7 +34,7 @@ export class MusicalsController {
           properties: {
             data: {
               type: 'array',
-              items: { $ref: getSchemaPath(MusicalDto) },
+              items: { $ref: getSchemaPath(MusicalPosterDto) },
             },
           },
           example: {
@@ -64,7 +64,7 @@ export class MusicalsController {
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   async filterPosters(
     @Query('initialRange') initialRange: string,
-  ): Promise<ResponseDto<MusicalDto | null>> {
+  ): Promise<ResponseDto<MusicalPosterDto | null>> {
     if (!isValidQuery(initialRange, PosterFilterKeyword)) {
       return fail();
     }
@@ -72,5 +72,61 @@ export class MusicalsController {
     const musicals =
       await this.musicalsService.findFilteredMusicals(initialRange);
     return success(musicals, 'Success to get filtered poster list.');
+  }
+
+  @Get(':id')
+  @ApiExtraModels(MusicalDto)
+  @ApiOkResponse({
+    description: 'Success to get musical information by ID.',
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseDto) },
+        {
+          properties: {
+            data: {
+              items: { $ref: getSchemaPath(MusicalDto) },
+            },
+          },
+          example: {
+            statusCode: 200,
+            message: 'Success to get musical information by ID.',
+            data: {
+              title: 'title',
+              synopsis: 'synopsis',
+              imageUrl: 'http://imageUrl.com',
+              numbers: [
+                {
+                  act: 1,
+                  order: 1,
+                  title: 'title1',
+                  videoUrl: 'https://example.com/video1',
+                  actors: ['A', 'B'],
+                },
+                {
+                  act: 2,
+                  order: 6,
+                  title: 'title2',
+                  videoUrl: 'https://example.com/video2',
+                  actors: ['C'],
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Musical not found.' })
+  async getMusicalInformationWithId(
+    @Param('id') id: string,
+  ): Promise<ResponseDto<MusicalDto | null>> {
+    if (isNaN(Number(id))) return fail(400, 'Bad Request.');
+
+    const musical = await this.musicalsService.findMusicalById(Number(id));
+
+    if (!musical) return fail(404, 'Musical not found');
+
+    return success([musical], 'Success to get musical information by ID.');
   }
 }
