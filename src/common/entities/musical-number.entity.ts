@@ -19,16 +19,16 @@ export class MusicalNumber {
   @JoinColumn({ name: 'musical_id' })
   musical: Musical;
 
-  @Column({ type: 'varchar', length: 32 })
-  title: string;
-
   @Column()
   act: number; // 1, 2
 
   @Column()
   order: number;
 
-  @Column({ name: 'video_url', type: 'varchar', length: 300 })
+  @Column({ type: 'varchar', length: 32 })
+  title: string;
+
+  @Column({ name: 'video_url', type: 'varchar', length: 300, unique: true })
   videoUrl: string;
 
   @ManyToMany(() => Actor, (actor) => actor.number)

@@ -7,7 +7,7 @@ export class Actor {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 16 })
+  @Column({ type: 'varchar', length: 16, unique: true })
   name: string;
 
   @ManyToMany(() => Musical, (musical) => musical.actor)

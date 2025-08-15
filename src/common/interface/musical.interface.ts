@@ -5,9 +5,13 @@ export interface Musical {
 
   title: string;
 
+  firstChoseong: string;
+
   poster: PosterProps;
 
   synopsis: string;
+
+  views: number;
 
   createdAt: Date;
 }
