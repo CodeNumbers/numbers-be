@@ -58,7 +58,7 @@ export class MusicalsController {
     @Query('initialRange') initialRange: string,
   ): Promise<DeprecatedResponseDto<MusicalPosterDto> | BadRequestException> {
     if (!isValidQuery(initialRange, PosterFilterKeyword)) {
-      return new BadRequestException();
+      throw new BadRequestException();
     }
 
     const musicals =
@@ -101,11 +101,11 @@ export class MusicalsController {
   ): Promise<
     ResponseDto<MusicalDto> | BadRequestException | NotFoundException
   > {
-    if (isNaN(Number(id))) return new BadRequestException();
+    if (isNaN(Number(id))) throw new BadRequestException();
 
     const musical = await this.musicalsService.findMusicalById(Number(id));
 
-    if (!musical) return new NotFoundException();
+    if (!musical) throw new NotFoundException();
 
     return new ResponseDto('Success to get musical information by ID.', [
       musical,
