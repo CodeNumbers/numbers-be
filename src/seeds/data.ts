@@ -1,9 +1,9 @@
-import { MusicalNumberProps } from 'src/common/interface/musical-number.interface';
+import { MusicalNumberDto } from 'src/musicalNumbers/musicalNumber.dto';
 
 export const MusicalData: {
   title: string;
   imageUrl: string;
-  numbers?: MusicalNumberProps[];
+  numbers?: MusicalNumberDto[];
 }[] = [
   {
     // 0

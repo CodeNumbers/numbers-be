@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PosterProps } from 'src/common/interface/poster.interface';
 import { Musical } from 'src/common/entities/musical.entity';
-import { MusicalNumberProps } from 'src/common/interface/musical-number.interface';
+import { MusicalNumberDto } from 'src/musicalNumbers/musicalNumber.dto';
 
 // For deprecated API
 export class MusicalPosterDto {
@@ -12,7 +11,9 @@ export class MusicalPosterDto {
   title: string;
 
   @ApiProperty()
-  poster: PosterProps;
+  poster: {
+    imageUrl: string;
+  };
 
   constructor(musicalData: MusicalPosterDto) {
     Object.assign(this, musicalData);
@@ -29,8 +30,8 @@ export class MusicalDto {
   @ApiProperty()
   imageUrl: string;
 
-  @ApiProperty()
-  numbers: MusicalNumberProps[];
+  @ApiProperty({ type: [MusicalNumberDto] })
+  numbers: MusicalNumberDto[];
 
   constructor(musicalData: Musical) {
     this.title = musicalData.title;

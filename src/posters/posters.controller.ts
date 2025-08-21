@@ -1,4 +1,11 @@
-import { Controller, Get, HttpCode, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import {
   ApiQuery,
   ApiResponse,
@@ -8,14 +15,17 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { PostersService } from './posters.service';
-import { PosterDto } from './posters.dto';
-import { ResponseDto } from 'src/common/dto/response.dto';
-import { success, fail } from 'src/common/utils/response.util';
+import {
+  DeprecatedResponseDto,
+  ResponseDto,
+} from 'src/common/dto/response.dto';
+import { success } from 'src/common/utils/response.util';
 import { isValidQuery } from 'src/common/utils/validation.util';
 import {
   PosterSearchKeyword,
   PosterFilterKeyword,
 } from 'src/common/config/query-parameters';
+import { PosterDto } from './posters.dto';
 
 @Controller('posters')
 export class PostersController {
@@ -24,12 +34,12 @@ export class PostersController {
   @Get('search')
   @ApiOperation({ deprecated: true })
   @ApiQuery({ name: 'select', enum: ['random', 'views'] })
-  @ApiExtraModels(ResponseDto, PosterDto)
+  @ApiExtraModels(DeprecatedResponseDto, PosterDto)
   @ApiOkResponse({
     description: 'Success to get poster list.',
     schema: {
       allOf: [
-        { $ref: getSchemaPath(ResponseDto) },
+        { $ref: getSchemaPath(DeprecatedResponseDto) },
         {
           properties: {
             data: {
@@ -37,30 +47,16 @@ export class PostersController {
               items: { $ref: getSchemaPath(PosterDto) },
             },
           },
-          example: {
-            statusCode: 200,
-            message: 'Success to get poster list.',
-            data: [
-              {
-                id: 1,
-                imageUrl: 'https://example.com/image1',
-              },
-              {
-                id: 2,
-                imageUrl: 'https://example.com/image2',
-              },
-            ],
-          },
         },
       ],
     },
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
   async getPosters(
     @Query('select') select: string,
-  ): Promise<ResponseDto<PosterDto | null>> {
+  ): Promise<DeprecatedResponseDto<PosterDto> | BadRequestException> {
     if (!isValidQuery(select, PosterSearchKeyword)) {
-      return fail();
+      return new BadRequestException();
     }
     const posters = await this.postersService.findPostersByMode(select, 5);
     return success(posters, 'Success to get poster list.');
@@ -72,12 +68,12 @@ export class PostersController {
     name: 'initialRange',
     enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
   })
-  @ApiExtraModels(ResponseDto, PosterDto)
+  @ApiExtraModels(DeprecatedResponseDto, PosterDto)
   @ApiOkResponse({
     description: 'Success to get filtered poster list.',
     schema: {
       allOf: [
-        { $ref: getSchemaPath(ResponseDto) },
+        { $ref: getSchemaPath(DeprecatedResponseDto) },
         {
           properties: {
             data: {
@@ -85,36 +81,16 @@ export class PostersController {
               items: { $ref: getSchemaPath(PosterDto) },
             },
           },
-          example: {
-            statusCode: 200,
-            message: 'Success to get filtered poster list.',
-            data: [
-              {
-                id: 1,
-                title: 'title1',
-                poster: {
-                  imageUrl: 'https://example.com/image1',
-                },
-              },
-              {
-                id: 2,
-                title: 'title2',
-                poster: {
-                  imageUrl: 'https://example.com/image2',
-                },
-              },
-            ],
-          },
         },
       ],
     },
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
   async filterPosters(
     @Query('initialRange') initialRange: string,
-  ): Promise<ResponseDto<PosterDto | null>> {
+  ): Promise<DeprecatedResponseDto<PosterDto> | BadRequestException> {
     if (!isValidQuery(initialRange, PosterFilterKeyword)) {
-      return fail();
+      return new BadRequestException();
     }
 
     const posters =
@@ -150,7 +126,6 @@ export class PostersController {
     type: String,
     description: '독립적으로만 사용 가능(mode, limit과 함께 사용 불가)',
   })
-  @HttpCode(200)
 
   // Swagger: /posters API Response Description
   @ApiResponse({
@@ -166,15 +141,16 @@ export class PostersController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
 
   // /posters API function
   @Get()
+  @HttpCode(200)
   async selectModeAndFilter(
     @Query('mode') mode?: 'random' | 'views',
     @Query('limit') limit?: number,
     @Query('initialRange') initialRange?: string,
-  ) {
+  ): Promise<ResponseDto<PosterDto> | BadRequestException> {
     if (mode && limit && !initialRange) {
       const posters = await this.postersService.findPostersByMode(mode, limit);
       return { message: 'Success to get poster list by mode.', data: posters };
@@ -186,6 +162,6 @@ export class PostersController {
         data: posters,
       };
     }
-    return fail();
+    return new BadRequestException();
   }
 }

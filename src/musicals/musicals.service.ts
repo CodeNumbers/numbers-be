@@ -12,7 +12,6 @@ export class MusicalsService {
     private musicalsRepository: Repository<Musical>,
   ) {}
 
-  // musical (id, title) poster (imageUrl)
   async findFilteredMusicals(
     initialRange: string,
   ): Promise<MusicalPosterDto[]> {

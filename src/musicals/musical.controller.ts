@@ -1,4 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Query,
+} from '@nestjs/common';
 import {
   ApiExtraModels,
   ApiOkResponse,
@@ -8,9 +17,12 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { MusicalsService } from './musicals.service';
-import { ResponseDto } from 'src/common/dto/response.dto';
+import {
+  DeprecatedResponseDto,
+  ResponseDto,
+} from 'src/common/dto/response.dto';
 import { isValidQuery } from 'src/common/utils/validation.util';
-import { success, fail } from 'src/common/utils/response.util';
+import { success } from 'src/common/utils/response.util';
 import { PosterFilterKeyword } from 'src/common/config/query-parameters';
 import { MusicalDto, MusicalPosterDto } from './musicals.dto';
 
@@ -20,16 +32,16 @@ export class MusicalsController {
 
   @Get('filter')
   @ApiOperation({ deprecated: true })
+  @ApiExtraModels(DeprecatedResponseDto, MusicalPosterDto)
   @ApiQuery({
     name: 'initialRange',
     enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
   })
-  @ApiExtraModels(ResponseDto, MusicalPosterDto)
   @ApiOkResponse({
     description: 'Success to get filtered poster list.',
     schema: {
       allOf: [
-        { $ref: getSchemaPath(ResponseDto) },
+        { $ref: getSchemaPath(DeprecatedResponseDto) },
         {
           properties: {
             data: {
@@ -37,36 +49,16 @@ export class MusicalsController {
               items: { $ref: getSchemaPath(MusicalPosterDto) },
             },
           },
-          example: {
-            statusCode: 200,
-            message: 'Success to get filtered poster list.',
-            data: [
-              {
-                id: 1,
-                title: 'title1',
-                poster: {
-                  imageUrl: 'https://example.com/image1',
-                },
-              },
-              {
-                id: 2,
-                title: 'title2',
-                poster: {
-                  imageUrl: 'https://example.com/image2',
-                },
-              },
-            ],
-          },
         },
       ],
     },
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
   async filterPosters(
     @Query('initialRange') initialRange: string,
-  ): Promise<ResponseDto<MusicalPosterDto | null>> {
+  ): Promise<DeprecatedResponseDto<MusicalPosterDto> | BadRequestException> {
     if (!isValidQuery(initialRange, PosterFilterKeyword)) {
-      return fail();
+      return new BadRequestException();
     }
 
     const musicals =
@@ -74,8 +66,13 @@ export class MusicalsController {
     return success(musicals, 'Success to get filtered poster list.');
   }
 
+  // Swagger: musical/:id API Description
   @Get(':id')
-  @ApiExtraModels(MusicalDto)
+  @ApiOperation({
+    summary: 'id 기반 뮤지컬 조회',
+    description: 'Path parameter: id',
+  })
+  @ApiExtraModels(ResponseDto, MusicalDto)
   @ApiOkResponse({
     description: 'Success to get musical information by ID.',
     schema: {
@@ -87,46 +84,31 @@ export class MusicalsController {
               items: { $ref: getSchemaPath(MusicalDto) },
             },
           },
-          example: {
-            statusCode: 200,
-            message: 'Success to get musical information by ID.',
-            data: {
-              title: 'title',
-              synopsis: 'synopsis',
-              imageUrl: 'http://imageUrl.com',
-              numbers: [
-                {
-                  act: 1,
-                  order: 1,
-                  title: 'title1',
-                  videoUrl: 'https://example.com/video1',
-                  actors: ['A', 'B'],
-                },
-                {
-                  act: 2,
-                  order: 6,
-                  title: 'title2',
-                  videoUrl: 'https://example.com/video2',
-                  actors: ['C'],
-                },
-              ],
-            },
-          },
         },
       ],
     },
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Musical not found.' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Musical not found.',
+  })
+
+  // /musical/:id API Function
+  @HttpCode(HttpStatus.OK)
   async getMusicalInformationWithId(
     @Param('id') id: string,
-  ): Promise<ResponseDto<MusicalDto | null>> {
-    if (isNaN(Number(id))) return fail(400, 'Bad Request.');
+  ): Promise<
+    ResponseDto<MusicalDto> | BadRequestException | NotFoundException
+  > {
+    if (isNaN(Number(id))) return new BadRequestException();
 
     const musical = await this.musicalsService.findMusicalById(Number(id));
 
-    if (!musical) return fail(404, 'Musical not found');
+    if (!musical) return new NotFoundException();
 
-    return success([musical], 'Success to get musical information by ID.');
+    return new ResponseDto('Success to get musical information by ID.', [
+      musical,
+    ]);
   }
 }
