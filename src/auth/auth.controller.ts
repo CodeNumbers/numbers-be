@@ -12,7 +12,7 @@ import { ResponseDto } from 'src/common/dto/response.dto';
 import { SignInDto } from './auth.dto';
 import { LocalAuthGuard } from './local-auth.guard';
 
-@Controller('admin')
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
