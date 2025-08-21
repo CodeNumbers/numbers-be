@@ -16,14 +16,26 @@ export class DeprecatedResponseDto<T> {
   }
 }
 
-export class ResponseDto<T> {
+export class ResponseDtoInArray<T> {
   @ApiProperty()
   message: string;
 
   data: T[];
 
-  constructor(message: string, data: T[] | null = null) {
+  constructor(message: string, data: T[]) {
     this.message = message;
-    if (data) this.data = data.slice();
+    this.data = data.slice();
+  }
+}
+
+export class ResponseDto<T> {
+  @ApiProperty()
+  message: string;
+
+  data?: T | null;
+
+  constructor(message: string, data?: T) {
+    this.message = message;
+    if (data) this.data = data;
   }
 }

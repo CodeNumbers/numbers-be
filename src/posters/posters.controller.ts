@@ -17,7 +17,7 @@ import {
 import { PostersService } from './posters.service';
 import {
   DeprecatedResponseDto,
-  ResponseDto,
+  ResponseDtoInArray,
 } from 'src/common/dto/response.dto';
 import { success } from 'src/common/utils/response.util';
 import { isValidQuery } from 'src/common/utils/validation.util';
@@ -56,7 +56,7 @@ export class PostersController {
     @Query('select') select: string,
   ): Promise<DeprecatedResponseDto<PosterDto> | BadRequestException> {
     if (!isValidQuery(select, PosterSearchKeyword)) {
-      return new BadRequestException();
+      throw new BadRequestException();
     }
     const posters = await this.postersService.findPostersByMode(select, 5);
     return success(posters, 'Success to get poster list.');
@@ -90,7 +90,7 @@ export class PostersController {
     @Query('initialRange') initialRange: string,
   ): Promise<DeprecatedResponseDto<PosterDto> | BadRequestException> {
     if (!isValidQuery(initialRange, PosterFilterKeyword)) {
-      return new BadRequestException();
+      throw new BadRequestException();
     }
 
     const posters =
@@ -129,7 +129,7 @@ export class PostersController {
 
   // Swagger: /posters API Response Description
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: `
 - mode+limit: 모드(mode) 기반 포스터 조회 성공
 - initialRange: 초성 필터(initialRange) 기반 포스터 조회 성공`,
@@ -145,23 +145,28 @@ export class PostersController {
 
   // /posters API function
   @Get()
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async selectModeAndFilter(
     @Query('mode') mode?: 'random' | 'views',
     @Query('limit') limit?: number,
     @Query('initialRange') initialRange?: string,
-  ): Promise<ResponseDto<PosterDto> | BadRequestException> {
+  ): Promise<ResponseDtoInArray<PosterDto> | BadRequestException> {
+    // Mode Query Version
     if (mode && limit && !initialRange) {
       const posters = await this.postersService.findPostersByMode(mode, limit);
-      return { message: 'Success to get poster list by mode.', data: posters };
+      return new ResponseDtoInArray(
+        'Success to get poster list by mode.',
+        posters,
+      );
     } else if (initialRange) {
+      // Initial Range Filter Version
       const posters =
         await this.postersService.findPostersByInitialRange(initialRange);
-      return {
-        message: 'Success to get poster list by initial range.',
-        data: posters,
-      };
+      return new ResponseDtoInArray(
+        'Success to get poster list by initial range.',
+        posters,
+      );
     }
-    return new BadRequestException();
+    throw new BadRequestException();
   }
 }

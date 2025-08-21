@@ -7,7 +7,7 @@ import { MusicalNumber } from 'src/common/entities/musical-number.entity';
 import { Actor } from 'src/common/entities/actor.entity';
 import { getFirstChoseong } from 'src/common/utils/choseong';
 import { MusicalData } from './data';
-import { MusicalNumberDto } from 'src/musicalNumbers/musicalNumber.dto';
+import { MusicalNumberDto } from 'src/musical-numbers/musical-number.dto';
 @Injectable()
 export class MusicalSeeder {
   posterRepo: Repository<Poster>;
