@@ -107,8 +107,9 @@ export class MusicalsController {
 
     if (!musical) throw new NotFoundException();
 
-    return new ResponseDto('Success to get musical information by ID.', [
+    return new ResponseDto(
+      'Success to get musical information by ID.',
       musical,
-    ]);
+    );
   }
 }
