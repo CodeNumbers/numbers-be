@@ -59,4 +59,11 @@ export class PostersService {
       return title1.localeCompare(title2, 'ko');
     });
   }
+
+  async createPoster(imageUrl: string): Promise<Poster> {
+    const posterInstance = this.postersRepository.create({ imageUrl });
+    await this.postersRepository.save(posterInstance);
+
+    return posterInstance;
+  }
 }

@@ -8,5 +8,6 @@ import { Poster } from '../common/entities/poster.entity';
   imports: [TypeOrmModule.forFeature([Poster])],
   providers: [PostersService],
   controllers: [PostersController],
+  exports: [PostersService],
 })
 export class PostersModule {}

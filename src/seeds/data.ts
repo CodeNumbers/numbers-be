@@ -1,9 +1,9 @@
-import { MusicalNumberDto } from 'src/musical-numbers/musical-number.dto';
+import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
 
 export const MusicalData: {
   title: string;
   imageUrl: string;
-  numbers?: MusicalNumberDto[];
+  numbers?: MusicalNumbersDto[];
 }[] = [
   {
     // 0
@@ -93,18 +93,12 @@ export const MusicalData: {
   },
   {
     // 8
-    title: '레베카',
-    imageUrl:
-      'https://i.namu.wiki/i/vn3g_JTaVGVHpZsiskl2sKgSh9og4d3XIYOOFj96pCRSM7_WMOIRnhcvNK9vk3d1ETlbkZzqa81ArfHMG-LKDW9Ys4rJ37JdQ3dx3kYohvWK_vyCu9cogILI65zwN9dut680EPCArcd28dANXDkI3A.webp',
-  },
-  {
-    // 9
     title: '어쩌면 해피엔딩',
     imageUrl:
       'https://i.namu.wiki/i/BlJvgFK5-TUJufPFIIRsreopqhhigFVzMZ55E00DCjiVY0WbqbYeX61J5aEHZ2DeRaAma6T0QDsyUxrDw0oRgPs7lJtqRCZpsLCGRgCoellvkBI1az_wZHiMC9TDsj_zNu-sHC_dtZkV5N_Zl7_x5w.webp',
   },
   {
-    // 10
+    // 9
     title: '영웅',
     imageUrl:
       'https://www.lgart.com/Down/Perf/202210/%ED%8F%AC%EC%8A%A4%ED%84%B0_2.jpg',

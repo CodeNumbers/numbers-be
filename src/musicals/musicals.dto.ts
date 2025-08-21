@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Musical } from 'src/common/entities/musical.entity';
-import { MusicalNumberDto } from 'src/musical-numbers/musical-number.dto';
+import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
 
 // For deprecated API
 export class MusicalPosterDto {
@@ -20,27 +20,39 @@ export class MusicalPosterDto {
   }
 }
 
-export class MusicalDto {
-  @ApiProperty()
+class MusicalDto {
+  @ApiProperty({ type: 'string' })
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   synopsis: string;
 
-  @ApiProperty()
-  imageUrl: string;
-
-  @ApiProperty({ type: [MusicalNumberDto] })
-  numbers: MusicalNumberDto[];
+  @ApiProperty({ type: [MusicalNumbersDto] })
+  numbers: MusicalNumbersDto[];
 
   constructor(musicalData: Musical) {
     this.title = musicalData.title;
     this.synopsis = musicalData.synopsis;
-    this.imageUrl = musicalData.poster.imageUrl;
     this.numbers = musicalData.numbers.map((number) => {
       const actors = number.actors.map((actor) => actor.name);
 
       return { ...number, actors };
     });
+  }
+}
+
+export class ReadMusicalDto extends MusicalDto {
+  @ApiProperty({ type: 'string' })
+  imageUrl: string;
+
+  constructor(musicalData: Musical) {
+    super(musicalData);
+    this.imageUrl = musicalData.poster.imageUrl;
+  }
+}
+
+export class CreateMusicalDto extends MusicalDto {
+  constructor(musicalData: Musical) {
+    super(musicalData);
   }
 }

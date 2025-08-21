@@ -1,14 +1,17 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   NotFoundException,
   Param,
+  Post,
   Query,
 } from '@nestjs/common';
 import {
+  ApiBody,
   ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
@@ -22,9 +25,12 @@ import {
   ResponseDto,
 } from 'src/common/dto/response.dto';
 import { isValidQuery } from 'src/common/utils/validation.util';
-import { success } from 'src/common/utils/response.util';
 import { PosterFilterKeyword } from 'src/common/config/query-parameters';
-import { MusicalDto, MusicalPosterDto } from './musicals.dto';
+import {
+  ReadMusicalDto,
+  MusicalPosterDto,
+  CreateMusicalDto,
+} from './musicals.dto';
 
 @Controller('musicals')
 export class MusicalsController {
@@ -63,16 +69,32 @@ export class MusicalsController {
 
     const musicals =
       await this.musicalsService.findFilteredMusicals(initialRange);
-    return success(musicals, 'Success to get filtered poster list.');
+    return new DeprecatedResponseDto(
+      HttpStatus.OK,
+      'Success to get filtered poster list.',
+      musicals,
+    );
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBody({ type: CreateMusicalDto })
+  async createMusicalInformation(@Body() musicalInfo: CreateMusicalDto) {
+    const musical = await this.musicalsService.createMusical(musicalInfo);
+    return new ResponseDto(
+      `Success to insert ${musicalInfo.title} musical information.`,
+      musical,
+    );
   }
 
   // Swagger: musical/:id API Description
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'id 기반 뮤지컬 조회',
     description: 'Path parameter: id',
   })
-  @ApiExtraModels(ResponseDto, MusicalDto)
+  @ApiExtraModels(ResponseDto, ReadMusicalDto)
   @ApiOkResponse({
     description: 'Success to get musical information by ID.',
     schema: {
@@ -81,7 +103,7 @@ export class MusicalsController {
         {
           properties: {
             data: {
-              items: { $ref: getSchemaPath(MusicalDto) },
+              items: { $ref: getSchemaPath(ReadMusicalDto) },
             },
           },
         },
@@ -95,11 +117,10 @@ export class MusicalsController {
   })
 
   // /musical/:id API Function
-  @HttpCode(HttpStatus.OK)
   async getMusicalInformationWithId(
     @Param('id') id: string,
   ): Promise<
-    ResponseDto<MusicalDto> | BadRequestException | NotFoundException
+    ResponseDto<ReadMusicalDto> | BadRequestException | NotFoundException
   > {
     if (isNaN(Number(id))) throw new BadRequestException();
 
