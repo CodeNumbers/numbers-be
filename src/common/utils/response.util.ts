@@ -8,6 +8,9 @@ export function success<T>(
   return new ResponseDto(statusCode, message, data);
 }
 
-export function fail(statusCode = 400, message = 'Failed.'): ResponseDto<null> {
+export function fail(
+  statusCode = 400,
+  message = 'Bad Request.',
+): ResponseDto<null> {
   return new ResponseDto(statusCode, message, null);
 }
