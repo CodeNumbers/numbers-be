@@ -1,4 +1,4 @@
-import { MusicalNumberDto } from 'src/musicalNumbers/musicalNumber.dto';
+import { MusicalNumberDto } from 'src/musical-numbers/musical-number.dto';
 
 export const MusicalData: {
   title: string;

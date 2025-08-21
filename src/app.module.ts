@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import { join } from 'path';
 import { PostersModule } from './posters/posters.module';
 import { MusicalsModule } from './musicals/musicals.module';
-import { AdminModule } from './admin/admin.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { AdminModule } from './admin/admin.module';
     // Feature Modules
     PostersModule,
     MusicalsModule,
-    AdminModule,
+    AuthModule,
   ],
   // controllers: [],
   // providers: [],

@@ -1,30 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { SignInDto } from './admin.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class AdminService {
+export class AuthService {
   private adminId: string;
   private adminPasswordHashed: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
+  ) {
     this.adminId = this.configService.get<string>('ADMIN_ID')!;
     const adminPassword = this.configService.get<string>('ADMIN_PASSWORD')!;
     this.adminPasswordHashed = bcrypt.hashSync(adminPassword, 10);
   }
 
-  async isAdmin(signInDto: SignInDto) {
+  async isAdmin(id: string, password: string): Promise<boolean> {
     // Compare ID
-    if (signInDto.id !== this.adminId) return false;
+    if (id !== this.adminId) return false;
 
     // Compare password
-    const passwordHashed = await bcrypt.hash(signInDto.password, 10);
     const compareResult = await bcrypt.compare(
-      passwordHashed,
+      password,
       this.adminPasswordHashed,
     );
-    if (compareResult) return false;
-    return true;
+
+    console.log(compareResult);
+
+    return compareResult;
+  }
+
+  publishAccessToken(id: string) {
+    const payload = { id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Musical } from 'src/common/entities/musical.entity';
-import { MusicalNumberDto } from 'src/musicalNumbers/musicalNumber.dto';
+import { MusicalNumberDto } from 'src/musical-numbers/musical-number.dto';
 
 // For deprecated API
 export class MusicalPosterDto {
