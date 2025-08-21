@@ -45,6 +45,7 @@ export class MusicalsService {
         'actor.name',
       ])
       .where('musical.id = :id', { id })
+      .orderBy('number.act', 'ASC')
       .orderBy('number.order', 'ASC')
       .getOne();
 
