@@ -6,7 +6,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ResponseDto } from 'src/common/dto/response.dto';
 import { SignInDto } from './auth.dto';
@@ -25,6 +25,7 @@ export class AuthController {
     summary: '로그인 ▶️ 사용자 인증',
     description: 'Body: id, password required',
   })
+  @ApiBody({ type: SignInDto })
 
   // /admin/signin Function
   signin(@Request() req: { user: SignInDto }) {
