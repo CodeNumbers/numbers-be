@@ -12,14 +12,14 @@ export class PostersService {
     private postersRepository: Repository<Poster>,
   ) {}
 
-  async findPostersByKeyword(select: string): Promise<PosterDto[]> {
-    if (select === 'random') {
+  async findPostersByMode(mode: string, limit: number): Promise<PosterDto[]> {
+    if (mode === 'random') {
       const posters = await this.postersRepository
         .createQueryBuilder('poster')
         .select(['musical.id', 'musical.title', 'poster.imageUrl'])
         .leftJoin('poster.musical', 'musical')
         .orderBy('RAND()')
-        .limit(5)
+        .limit(limit)
         .getMany();
       return posters.map((poster) => new PosterDto(poster));
     } else {
@@ -30,13 +30,13 @@ export class PostersService {
         .leftJoin('poster.musical', 'musical')
         .orderBy('musical.views', 'DESC')
         .orderBy('musical.id', 'ASC')
-        .limit(5)
+        .limit(limit)
         .getMany();
       return posters.map((poster) => new PosterDto(poster));
     }
   }
 
-  async findFilteredMusicals(initialRange: string): Promise<PosterDto[]> {
+  async findPostersByInitialRange(initialRange: string): Promise<PosterDto[]> {
     const posters = await this.postersRepository
       .createQueryBuilder('poster')
       .select(['musical.id', 'musical.title', 'poster.imageUrl'])
