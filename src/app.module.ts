@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { join } from 'path';
 import { PostersModule } from './posters/posters.module';
 import { MusicalsModule } from './musicals/musicals.module';
-import { join } from 'path';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { join } from 'path';
     // Feature Modules
     PostersModule,
     MusicalsModule,
+    AdminModule,
   ],
   // controllers: [],
   // providers: [],
