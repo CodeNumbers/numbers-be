@@ -20,6 +20,7 @@ export class ResponseDtoInArray<T> {
   @ApiProperty()
   message: string;
 
+  @ApiProperty({ type: [Object] })
   data: T[];
 
   constructor(message: string, data: T[]) {
@@ -32,6 +33,7 @@ export class ResponseDto<T> {
   @ApiProperty()
   message: string;
 
+  @ApiProperty({ type: Object })
   data?: T | null;
 
   constructor(message: string, data?: T) {

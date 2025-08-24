@@ -30,11 +30,12 @@ import { PosterDto } from './posters.dto';
 @Controller('posters')
 export class PostersController {
   constructor(private readonly postersService: PostersService) {}
+  @ApiExtraModels(DeprecatedResponseDto, ResponseDtoInArray, PosterDto)
 
+  // Deprecated
   @Get('search')
   @ApiOperation({ deprecated: true })
   @ApiQuery({ name: 'select', enum: ['random', 'views'] })
-  @ApiExtraModels(DeprecatedResponseDto, PosterDto)
   @ApiOkResponse({
     description: 'Success to get poster list.',
     schema: {
@@ -98,7 +99,11 @@ export class PostersController {
     return success(posters, 'Success to get filtered poster list.');
   }
 
-  // Swagger: /posters API Request Description
+  // GET /posters
+  @Get()
+  @HttpCode(HttpStatus.OK)
+
+  // Swagger
   @ApiOperation({
     summary: 'Home 페이지 포스터 조회용 API(search & filter 통합)',
     description: `
@@ -126,26 +131,28 @@ export class PostersController {
     type: String,
     description: '독립적으로만 사용 가능(mode, limit과 함께 사용 불가)',
   })
-
-  // Swagger: /posters API Response Description
   @ApiResponse({
     status: HttpStatus.OK,
     description: `
 - mode+limit: 모드(mode) 기반 포스터 조회 성공
 - initialRange: 초성 필터(initialRange) 기반 포스터 조회 성공`,
     schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' },
-        data: { type: 'array', items: { $ref: getSchemaPath(PosterDto) } },
-      },
+      allOf: [
+        { $ref: getSchemaPath(ResponseDtoInArray) },
+        {
+          properties: {
+            data: {
+              type: 'array',
+              items: { $ref: getSchemaPath(PosterDto) },
+            },
+          },
+        },
+      ],
     },
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
 
-  // /posters API function
-  @Get()
-  @HttpCode(HttpStatus.OK)
+  // Function
   async selectModeAndFilter(
     @Query('mode') mode?: 'random' | 'views',
     @Query('limit') limit?: number,
@@ -158,7 +165,7 @@ export class PostersController {
         'Success to get poster list by mode.',
         posters,
       );
-    } else if (initialRange) {
+    } else if (initialRange && !mode && !limit) {
       // Initial Range Filter Version
       const posters =
         await this.postersService.findPostersByInitialRange(initialRange);

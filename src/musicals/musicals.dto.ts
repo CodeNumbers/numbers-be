@@ -33,11 +33,9 @@ class MusicalDto {
   constructor(musicalData: Musical) {
     this.title = musicalData.title;
     this.synopsis = musicalData.synopsis;
-    this.numbers = musicalData.numbers.map((number) => {
-      const actors = number.actors.map((actor) => actor.name);
-
-      return { ...number, actors };
-    });
+    this.numbers = musicalData.numbers.map(
+      (number) => new MusicalNumbersDto(number), // 필요한 필드만 DTO로 변환
+    );
   }
 }
 

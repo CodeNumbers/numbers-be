@@ -9,9 +9,12 @@ import {
   Param,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBody,
+  ApiConsumes,
   ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
@@ -31,14 +34,23 @@ import {
   MusicalPosterDto,
   CreateMusicalDto,
 } from './musicals.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
 
 @Controller('musicals')
 export class MusicalsController {
   constructor(private readonly musicalsService: MusicalsService) {}
+  @ApiExtraModels(
+    DeprecatedResponseDto,
+    ResponseDto,
+    MusicalPosterDto,
+    CreateMusicalDto,
+    ReadMusicalDto,
+  )
 
+  // Deprecated
   @Get('filter')
   @ApiOperation({ deprecated: true })
-  @ApiExtraModels(DeprecatedResponseDto, MusicalPosterDto)
   @ApiQuery({
     name: 'initialRange',
     enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
@@ -76,25 +88,106 @@ export class MusicalsController {
     );
   }
 
+  // POST /musicals
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiBody({ type: CreateMusicalDto })
-  async createMusicalInformation(@Body() musicalInfo: CreateMusicalDto) {
-    const musical = await this.musicalsService.createMusical(musicalInfo);
+  @UseInterceptors(FileInterceptor('file'))
+
+  // Swagger
+  @ApiOperation({
+    summary: '뮤지컬 정보 생성',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { type: 'string', format: 'binary' },
+        title: {
+          type: 'string',
+          example: '레미제라블',
+          description: '중복 데이터 불가능.',
+        },
+        synopsis: { type: 'string', example: 'synopsis' },
+        numbers: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              act: { type: 'number' },
+              order: { type: 'number' },
+              title: { type: 'string' },
+              videoUrl: { type: 'string', description: '중복 데이터 불가능.' },
+              actors: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+          },
+          example: [
+            {
+              act: 1,
+              order: 1,
+              title: '제목',
+              videoUrl: 'https://youtu.be/abc',
+              actors: ['옥주현', '이지혜'],
+            },
+          ],
+        },
+      },
+      required: ['title', 'synopsis', 'numbers'],
+    },
+  })
+  @ApiOkResponse({
+    description: 'Success to insert musical information.',
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseDto) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(CreateMusicalDto) },
+          },
+        },
+      ],
+    },
+  })
+
+  // Function
+  async createMusicalInformation(
+    /* @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000 * 1024 }),
+          new FileTypeValidator({ fileType: 'image/png' }),
+        ],
+      }),
+    ) */
+    @UploadedFile() poster: Express.Multer.File,
+    @Body() musicalInfo: { title: string; synopsis: string; numbers: string },
+  ): Promise<ResponseDto<CreateMusicalDto>> {
+    const musicalNumbers = JSON.parse(
+      musicalInfo.numbers,
+    ) as MusicalNumbersDto[];
+    const musical = await this.musicalsService.createMusical({
+      ...musicalInfo,
+      numbers: musicalNumbers,
+    });
+
     return new ResponseDto(
       `Success to insert ${musicalInfo.title} musical information.`,
-      musical,
+      new CreateMusicalDto(musical),
     );
   }
 
-  // Swagger: musical/:id API Description
+  // GET /musicals/:id
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+
+  // Swagger
   @ApiOperation({
     summary: 'id 기반 뮤지컬 조회',
     description: 'Path parameter: id',
   })
-  @ApiExtraModels(ResponseDto, ReadMusicalDto)
   @ApiOkResponse({
     description: 'Success to get musical information by ID.',
     schema: {
@@ -102,9 +195,7 @@ export class MusicalsController {
         { $ref: getSchemaPath(ResponseDto) },
         {
           properties: {
-            data: {
-              items: { $ref: getSchemaPath(ReadMusicalDto) },
-            },
+            data: { $ref: getSchemaPath(ReadMusicalDto) },
           },
         },
       ],
@@ -116,7 +207,7 @@ export class MusicalsController {
     description: 'Musical not found.',
   })
 
-  // /musical/:id API Function
+  // Function
   async getMusicalInformationWithId(
     @Param('id') id: string,
   ): Promise<

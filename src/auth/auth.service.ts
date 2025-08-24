@@ -35,7 +35,7 @@ export class AuthService {
   publishAccessToken(id: string) {
     const payload = { id };
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 }
