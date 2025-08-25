@@ -1,17 +1,21 @@
 import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PosterDto } from './posters.dto';
 import { Poster } from '../common/entities/poster.entity';
 import { ChoseongFilterMap } from 'src/common/config/query-parameters';
 import { MusicalsService } from 'src/musicals/musicals.service';
+import { extname } from 'path';
+import { S3Service } from './s3.service';
+import { Musical } from 'src/common/entities/musical.entity';
 
 @Injectable()
 export class PostersService {
   constructor(
     @InjectRepository(Poster)
-    private postersRepository: Repository<Poster>,
-    private musicalsService: MusicalsService,
+    private readonly postersRepository: Repository<Poster>,
+    private readonly musicalsService: MusicalsService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async findPostersByMode(mode: string, limit: number): Promise<PosterDto[]> {
@@ -67,12 +71,37 @@ export class PostersService {
     });
   }
 
-  async createPoster(musicalId: number, imageUrl: string): Promise<Poster> {
-    const poster = this.postersRepository.create({ imageUrl });
+  async createPoster(musicalId: number, posterFile: Express.Multer.File) {
+    // Check poster already exist
+    const musical = await this.musicalsService.findMusicalById(musicalId);
+    if (musical.poster)
+      throw new BadRequestException('Poster already exist in musical');
+
+    // S3 upload
+    const imageKey = this.makeImageKey(musical, posterFile);
+    await this.s3Service.uploadPosterFile(
+      posterFile.buffer, // Upload File
+      imageKey, // File Name
+      posterFile.mimetype, // File type
+    );
+
+    // Create poster in database
+    const poster = this.postersRepository.create({ imageUrl: imageKey });
     await this.postersRepository.save(poster);
 
-    await this.musicalsService.makeRelationshipWithPoster(musicalId, poster);
+    // Make relationship with musical
+    await this.musicalsService.makeRelationshipWithPoster(musical, poster);
 
-    return poster;
+    return { poster, musicalTitle: musical.title };
+  }
+
+  makeImageKey(musical: Musical, posterFile: Express.Multer.File): string {
+    const ext = extname(posterFile.originalname);
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}`;
+
+    return `${musical.id}-${musical.title}-${formattedDate}${ext}`;
   }
 }

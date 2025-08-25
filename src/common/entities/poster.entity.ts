@@ -6,8 +6,15 @@ export class Poster {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { length: 500, name: 'image_url', unique: false })
+  @Column('varchar', {
+    length: 500,
+    name: 'image_url',
+    unique: true,
+  })
   imageUrl: string;
+
+  /* @Column('varchar', { length: 500, name: 'image_key'})
+  imageKey: string; */
 
   @Column({
     name: 'created_at',

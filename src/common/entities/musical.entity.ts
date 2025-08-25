@@ -7,6 +7,7 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  Unique,
 } from 'typeorm';
 import { Poster } from 'src/common/entities/poster.entity';
 import { MusicalNumber } from 'src/common/entities/musical-number.entity';
@@ -24,6 +25,7 @@ export class Musical {
   firstChoseong: string;
 
   @OneToOne(() => Poster, (poster) => poster.musical)
+  @Unique(['poster'])
   @JoinColumn({ name: 'poster_id' })
   poster: Poster; // Foreign key
 

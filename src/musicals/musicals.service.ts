@@ -58,10 +58,9 @@ export class MusicalsService {
   }
 
   async makeRelationshipWithPoster(
-    musicalId: number,
+    musical: Musical,
     poster: Poster,
   ): Promise<void> {
-    const musical = await this.findMusicalById(musicalId);
     musical.poster = poster;
     await this.musicalsRepository.save(musical);
   }
