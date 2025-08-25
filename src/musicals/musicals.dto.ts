@@ -1,46 +1,52 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Musical } from 'src/common/entities/musical.entity';
-import { MusicalNumberDto } from 'src/musical-numbers/musical-number.dto';
+import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
 
-// For deprecated API
-export class MusicalPosterDto {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
+class MusicalDto {
+  @ApiProperty({ type: 'string' })
   title: string;
 
-  @ApiProperty()
-  poster: {
-    imageUrl: string;
-  };
-
-  constructor(musicalData: MusicalPosterDto) {
-    Object.assign(this, musicalData);
-  }
-}
-
-export class MusicalDto {
-  @ApiProperty()
-  title: string;
-
-  @ApiProperty()
+  @ApiProperty({ type: 'string' })
   synopsis: string;
 
-  @ApiProperty()
-  imageUrl: string;
-
-  @ApiProperty({ type: [MusicalNumberDto] })
-  numbers: MusicalNumberDto[];
+  @ApiProperty({ type: [MusicalNumbersDto] })
+  numbers: MusicalNumbersDto[];
 
   constructor(musicalData: Musical) {
     this.title = musicalData.title;
     this.synopsis = musicalData.synopsis;
-    this.imageUrl = musicalData.poster.imageUrl;
-    this.numbers = musicalData.numbers.map((number) => {
-      const actors = number.actors.map((actor) => actor.name);
+    this.numbers = musicalData.numbers.map(
+      (number) => new MusicalNumbersDto(number), // 필요한 필드만 DTO로 변환
+    );
+  }
+}
 
-      return { ...number, actors };
-    });
+export class CreateMusicalDto extends MusicalDto {
+  constructor(musicalData: Musical) {
+    super(musicalData);
+  }
+}
+
+export class ReadMusicalDto extends MusicalDto {
+  @ApiProperty({ type: 'string' })
+  imageUrl: string;
+
+  @ApiProperty({ type: 'number' })
+  views: number;
+
+  constructor(musicalData: Musical) {
+    super(musicalData);
+    this.imageUrl = musicalData.poster.imageUrl;
+    this.views = musicalData.views;
+  }
+}
+
+export class CreateMusicalResponseDto extends MusicalDto {
+  @ApiProperty({ type: 'number', description: '뮤지컬 ID' })
+  id: number;
+
+  constructor(musicalData: Musical) {
+    super(musicalData);
+    this.id = musicalData.id;
   }
 }

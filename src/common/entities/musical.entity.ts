@@ -23,7 +23,7 @@ export class Musical {
   @Column({ type: 'char', name: 'first_choseong' })
   firstChoseong: string;
 
-  @OneToOne(() => Poster, (poster) => poster.musical, { nullable: false })
+  @OneToOne(() => Poster, (poster) => poster.musical)
   @JoinColumn({ name: 'poster_id' })
   poster: Poster; // Foreign key
 

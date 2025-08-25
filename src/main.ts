@@ -20,6 +20,14 @@ async function bootstrap() {
     .setDescription('The Numbers API description')
     .setVersion('1.0')
     .addServer('http://localhost:3000/')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

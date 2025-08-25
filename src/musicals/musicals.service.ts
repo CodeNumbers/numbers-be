@@ -1,55 +1,68 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Musical } from '../common/entities/musical.entity';
-import { ChoseongFilterMap } from 'src/common/config/query-parameters';
-import { MusicalPosterDto, MusicalDto } from './musicals.dto';
+import { CreateMusicalDto } from './musicals.dto';
+import { getFirstChoseong } from 'src/common/utils/choseong';
+import { MusicalNumbersService } from 'src/musical-numbers/musical-numbers.service';
+import { Poster } from 'src/common/entities/poster.entity';
 
 @Injectable()
 export class MusicalsService {
   constructor(
     @InjectRepository(Musical)
-    private musicalsRepository: Repository<Musical>,
+    private readonly musicalsRepository: Repository<Musical>,
+    private readonly musicalNumbersService: MusicalNumbersService,
   ) {}
 
-  async findFilteredMusicals(
-    initialRange: string,
-  ): Promise<MusicalPosterDto[]> {
-    const musicals = await this.musicalsRepository
-      .createQueryBuilder('musical')
-      .leftJoin('musical.poster', 'poster')
-      .select(['musical.id', 'musical.title', 'poster.imageUrl'])
-      .where('musical.firstChoseong IN (:...choseongGroup)', {
-        choseongGroup: ChoseongFilterMap[initialRange],
-      })
-      .getMany();
-
-    return musicals.map((musical) => new MusicalPosterDto(musical));
-  }
-
-  async findMusicalById(id: number): Promise<MusicalDto | null> {
+  async findMusicalById(id: number): Promise<Musical> {
     const musical = await this.musicalsRepository
       .createQueryBuilder('musical')
-      .leftJoin('musical.poster', 'poster')
-      .leftJoin('musical.numbers', 'number')
-      .leftJoin('number.actors', 'actor')
-      .select([
-        'musical.title',
-        'musical.synopsis',
-        'poster.imageUrl',
-        'number.act',
-        'number.order',
-        'number.title',
-        'number.videoUrl',
-        'actor.name',
-      ])
+      .leftJoinAndSelect('musical.poster', 'poster')
+      .leftJoinAndSelect('musical.numbers', 'number')
+      .leftJoinAndSelect('number.actors', 'actor')
       .where('musical.id = :id', { id })
       .orderBy('number.act', 'ASC')
       .orderBy('number.order', 'ASC')
       .getOne();
 
-    if (!musical) return null;
+    if (!musical) throw new NotFoundException();
 
-    return new MusicalDto(musical);
+    return musical;
+  }
+
+  async isExistMusical(title: string) {
+    return this.musicalsRepository.findOneBy({ title });
+  }
+
+  async createMusical(musicalInfo: CreateMusicalDto): Promise<Musical> {
+    // Insert Actor & Numbers
+    const musicalNumberInstances =
+      await this.musicalNumbersService.createMusicalNumbers(
+        musicalInfo.numbers,
+      );
+
+    // Insert Musical
+    const musicalInstance = this.musicalsRepository.create({
+      title: musicalInfo.title,
+      synopsis: musicalInfo.synopsis,
+      numbers: musicalNumberInstances,
+      firstChoseong: getFirstChoseong(musicalInfo.title),
+    });
+
+    // Add relationship : musical.numbers <> numbers.id
+    musicalInstance.numbers = musicalNumberInstances;
+    await this.musicalsRepository.save(musicalInstance);
+
+    return musicalInstance;
+  }
+
+  async makeRelationshipWithPoster(
+    musicalId: number,
+    poster: Poster,
+  ): Promise<void> {
+    const musical = await this.findMusicalById(musicalId);
+    musical.poster = poster;
+    await this.musicalsRepository.save(musical);
   }
 }

@@ -7,7 +7,7 @@ import { MusicalNumber } from 'src/common/entities/musical-number.entity';
 import { Actor } from 'src/common/entities/actor.entity';
 import { getFirstChoseong } from 'src/common/utils/choseong';
 import { MusicalData } from './data';
-import { MusicalNumberDto } from 'src/musical-numbers/musical-number.dto';
+import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
 @Injectable()
 export class MusicalSeeder {
   posterRepo: Repository<Poster>;
@@ -51,7 +51,7 @@ export class MusicalSeeder {
     console.log(`✅ ${count} seed data inserted.`);
   }
 
-  async seedActData(numbers: MusicalNumberDto[], musicalInstance: Musical) {
+  async seedActData(numbers: MusicalNumbersDto[], musicalInstance: Musical) {
     for (let index = 0; index < numbers.length; index++) {
       const act = numbers[index].act;
       const order = numbers[index].order;

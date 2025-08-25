@@ -4,101 +4,110 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Post,
   Query,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiQuery,
   ApiResponse,
-  ApiOkResponse,
   getSchemaPath,
   ApiExtraModels,
   ApiOperation,
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import * as fs from 'fs';
 import { PostersService } from './posters.service';
-import {
-  DeprecatedResponseDto,
-  ResponseDtoInArray,
-} from 'src/common/dto/response.dto';
-import { success } from 'src/common/utils/response.util';
-import { isValidQuery } from 'src/common/utils/validation.util';
-import {
-  PosterSearchKeyword,
-  PosterFilterKeyword,
-} from 'src/common/config/query-parameters';
-import { PosterDto } from './posters.dto';
+import { ResponseDto, ResponseDtoInArray } from 'src/common/dto/response.dto';
+import { CreatePosterDto, PosterDto } from './posters.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { extname, join } from 'path';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('posters')
 export class PostersController {
   constructor(private readonly postersService: PostersService) {}
+  @ApiExtraModels(ResponseDtoInArray, PosterDto, CreatePosterDto)
 
-  @Get('search')
-  @ApiOperation({ deprecated: true })
-  @ApiQuery({ name: 'select', enum: ['random', 'views'] })
-  @ApiExtraModels(DeprecatedResponseDto, PosterDto)
+  // POST /posters
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(JwtAuthGuard)
+
+  // Swagger
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '포스터 파일 S3 업로드',
+    description: 'POST /musicals 후에 실행돼야 함.',
+  })
+  @ApiQuery({ name: 'musicalId', description: '뮤지컬 ID' })
+  @ApiQuery({ name: 'musicalTitle', description: '뮤지컬 제목' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '포스터 파일',
+    schema: {
+      type: 'object',
+      required: ['posterFile'],
+      properties: {
+        posterFile: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('posterFile'))
   @ApiOkResponse({
-    description: 'Success to get poster list.',
+    description: 'Success to create poster.',
     schema: {
       allOf: [
-        { $ref: getSchemaPath(DeprecatedResponseDto) },
+        { $ref: getSchemaPath(ResponseDto) },
         {
           properties: {
-            data: {
-              type: 'array',
-              items: { $ref: getSchemaPath(PosterDto) },
-            },
+            data: { $ref: getSchemaPath(CreatePosterDto) },
           },
         },
       ],
     },
   })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
-  async getPosters(
-    @Query('select') select: string,
-  ): Promise<DeprecatedResponseDto<PosterDto> | BadRequestException> {
-    if (!isValidQuery(select, PosterSearchKeyword)) {
-      throw new BadRequestException();
-    }
-    const posters = await this.postersService.findPostersByMode(select, 5);
-    return success(posters, 'Success to get poster list.');
+
+  // Function
+  async uploadPoster(
+    @Query('musicalId') musicalId: number,
+    @Query('musicalTitle') musicalTitle: string,
+    @UploadedFile() posterFile: Express.Multer.File,
+    /* @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000 * 1024 }),
+          new FileTypeValidator({ fileType: 'image/png' }),
+        ],
+      }),
+    ) */
+  ) {
+    const ext = extname(posterFile.originalname);
+    const uploadPath = join(process.cwd(), '/upload');
+    fs.writeFileSync(
+      uploadPath + `${musicalId}-${musicalTitle}-${Date.now()}${ext}`,
+      posterFile.buffer,
+    );
+
+    // S3
+    const imageUrl = 'sample.com';
+    const poster = await this.postersService.createPoster(musicalId, imageUrl);
+    return new ResponseDto(
+      'Success to create poster.',
+      new CreatePosterDto(musicalTitle, poster),
+    );
   }
 
-  @Get('filter')
-  @ApiOperation({ deprecated: true })
-  @ApiQuery({
-    name: 'initialRange',
-    enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
-  })
-  @ApiExtraModels(DeprecatedResponseDto, PosterDto)
-  @ApiOkResponse({
-    description: 'Success to get filtered poster list.',
-    schema: {
-      allOf: [
-        { $ref: getSchemaPath(DeprecatedResponseDto) },
-        {
-          properties: {
-            data: {
-              type: 'array',
-              items: { $ref: getSchemaPath(PosterDto) },
-            },
-          },
-        },
-      ],
-    },
-  })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
-  async filterPosters(
-    @Query('initialRange') initialRange: string,
-  ): Promise<DeprecatedResponseDto<PosterDto> | BadRequestException> {
-    if (!isValidQuery(initialRange, PosterFilterKeyword)) {
-      throw new BadRequestException();
-    }
+  // GET /posters
+  @Get()
+  @HttpCode(HttpStatus.OK)
 
-    const posters =
-      await this.postersService.findPostersByInitialRange(initialRange);
-    return success(posters, 'Success to get filtered poster list.');
-  }
-
-  // Swagger: /posters API Request Description
+  // Swagger
   @ApiOperation({
     summary: 'Home 페이지 포스터 조회용 API(search & filter 통합)',
     description: `
@@ -126,26 +135,28 @@ export class PostersController {
     type: String,
     description: '독립적으로만 사용 가능(mode, limit과 함께 사용 불가)',
   })
-
-  // Swagger: /posters API Response Description
   @ApiResponse({
     status: HttpStatus.OK,
     description: `
 - mode+limit: 모드(mode) 기반 포스터 조회 성공
 - initialRange: 초성 필터(initialRange) 기반 포스터 조회 성공`,
     schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' },
-        data: { type: 'array', items: { $ref: getSchemaPath(PosterDto) } },
-      },
+      allOf: [
+        { $ref: getSchemaPath(ResponseDtoInArray) },
+        {
+          properties: {
+            data: {
+              type: 'array',
+              items: { $ref: getSchemaPath(PosterDto) },
+            },
+          },
+        },
+      ],
     },
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
 
-  // /posters API function
-  @Get()
-  @HttpCode(HttpStatus.OK)
+  // Function
   async selectModeAndFilter(
     @Query('mode') mode?: 'random' | 'views',
     @Query('limit') limit?: number,
@@ -158,7 +169,7 @@ export class PostersController {
         'Success to get poster list by mode.',
         posters,
       );
-    } else if (initialRange) {
+    } else if (initialRange && !mode && !limit) {
       // Initial Range Filter Version
       const posters =
         await this.postersService.findPostersByInitialRange(initialRange);
