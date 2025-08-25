@@ -6,14 +6,35 @@ export class PosterDto {
   musicalId: number;
 
   @ApiProperty()
-  title: string;
+  musicalTitle: string;
 
   @ApiProperty()
   imageUrl: string;
 
+  @ApiProperty({ type: 'number' })
+  views?: number;
+
   constructor(posterData: Poster) {
     this.musicalId = posterData.musical.id;
-    this.title = posterData.musical.title;
+    this.musicalTitle = posterData.musical.title;
+    if (!isNaN(posterData.musical.views)) this.views = posterData.musical.views;
     this.imageUrl = posterData.imageUrl;
+  }
+}
+
+export class CreatePosterDto {
+  @ApiProperty({ type: 'number' })
+  posterId: number;
+
+  @ApiProperty({ type: 'string' })
+  musicalTitle: string;
+
+  @ApiProperty({ type: 'string' })
+  imageurl: string;
+
+  constructor(musicalTitle: string, posterData: Poster) {
+    this.musicalTitle = musicalTitle;
+    this.posterId = posterData.id;
+    this.imageurl = posterData.imageUrl;
   }
 }

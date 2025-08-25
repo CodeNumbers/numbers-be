@@ -4,7 +4,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiQuery,
@@ -12,15 +15,70 @@ import {
   getSchemaPath,
   ApiExtraModels,
   ApiOperation,
+  ApiBody,
+  ApiConsumes,
 } from '@nestjs/swagger';
+import * as fs from 'fs';
 import { PostersService } from './posters.service';
-import { ResponseDtoInArray } from 'src/common/dto/response.dto';
-import { PosterDto } from './posters.dto';
+import { ResponseDto, ResponseDtoInArray } from 'src/common/dto/response.dto';
+import { CreatePosterDto, PosterDto } from './posters.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { extname, join } from 'path';
 
 @Controller('posters')
 export class PostersController {
   constructor(private readonly postersService: PostersService) {}
   @ApiExtraModels(ResponseDtoInArray, PosterDto)
+
+  // POST /posters
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+
+  // Swagger
+  @ApiQuery({ name: 'musicalId', description: '뮤지컬 ID' })
+  @ApiQuery({ name: 'musicalTitle', description: '뮤지컬 제목' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '포스터 파일',
+    schema: {
+      type: 'object',
+      required: ['posterFile'],
+      properties: {
+        posterFile: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('posterFile'))
+
+  // Function
+  async uploadPoster(
+    @Query('musicalId') musicalId: number,
+    @Query('musicalTitle') musicalTitle: string,
+    @UploadedFile() posterFile: Express.Multer.File,
+    /* @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000 * 1024 }),
+          new FileTypeValidator({ fileType: 'image/png' }),
+        ],
+      }),
+    ) */
+  ) {
+    const ext = extname(posterFile.originalname);
+    const uploadPath = join(process.cwd(), '/upload');
+    fs.writeFileSync(
+      uploadPath + `${musicalId}-${musicalTitle}-${Date.now()}${ext}`,
+      posterFile.buffer,
+    );
+
+    // S3
+    const imageUrl = 'sample.com';
+    const poster = await this.postersService.createPoster(musicalId, imageUrl);
+    return new ResponseDto(
+      'Success to create poster.',
+      new CreatePosterDto(musicalTitle, poster),
+    );
+  }
 
   // GET /posters
   @Get()

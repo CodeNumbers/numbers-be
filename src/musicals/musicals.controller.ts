@@ -8,12 +8,9 @@ import {
   NotFoundException,
   Param,
   Post,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBody,
-  ApiConsumes,
   ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
@@ -22,9 +19,11 @@ import {
 } from '@nestjs/swagger';
 import { MusicalsService } from './musicals.service';
 import { ResponseDto } from 'src/common/dto/response.dto';
-import { ReadMusicalDto, CreateMusicalDto } from './musicals.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
+import {
+  ReadMusicalDto,
+  CreateMusicalDto,
+  CreateMusicalResponseDto,
+} from './musicals.dto';
 
 @Controller('musicals')
 export class MusicalsController {
@@ -34,18 +33,15 @@ export class MusicalsController {
   // POST /musicals
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(FileInterceptor('file'))
 
   // Swagger
   @ApiOperation({
     summary: '뮤지컬 정보 생성',
   })
-  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        file: { type: 'string', format: 'binary' },
         title: {
           type: 'string',
           example: '레미제라블',
@@ -54,6 +50,7 @@ export class MusicalsController {
         synopsis: { type: 'string', example: 'synopsis' },
         numbers: {
           type: 'array',
+          description: 'videoUrl 중복 데이터 불가능',
           items: {
             type: 'object',
             properties: {
@@ -78,7 +75,6 @@ export class MusicalsController {
           ],
         },
       },
-      required: ['title', 'synopsis', 'numbers'],
     },
   })
   @ApiOkResponse({
@@ -97,28 +93,13 @@ export class MusicalsController {
 
   // Function
   async createMusicalInformation(
-    /* @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 1000 * 1024 }),
-          new FileTypeValidator({ fileType: 'image/png' }),
-        ],
-      }),
-    ) */
-    @UploadedFile() poster: Express.Multer.File,
-    @Body() musicalInfo: { title: string; synopsis: string; numbers: string },
+    @Body() musicalInfo: CreateMusicalDto,
   ): Promise<ResponseDto<CreateMusicalDto>> {
-    const musicalNumbers = JSON.parse(
-      musicalInfo.numbers,
-    ) as MusicalNumbersDto[];
-    const musical = await this.musicalsService.createMusical({
-      ...musicalInfo,
-      numbers: musicalNumbers,
-    });
+    const musical = await this.musicalsService.createMusical(musicalInfo);
 
     return new ResponseDto(
       `Success to insert ${musicalInfo.title} musical information.`,
-      new CreateMusicalDto(musical),
+      new CreateMusicalResponseDto(musical),
     );
   }
 
@@ -152,7 +133,7 @@ export class MusicalsController {
 
   // Function
   async getMusicalInformationWithId(
-    @Param('id') id: string,
+    @Param('id') id: number,
   ): Promise<
     ResponseDto<ReadMusicalDto> | BadRequestException | NotFoundException
   > {
@@ -160,11 +141,9 @@ export class MusicalsController {
 
     const musical = await this.musicalsService.findMusicalById(Number(id));
 
-    if (!musical) throw new NotFoundException();
-
     return new ResponseDto(
       'Success to get musical information by ID.',
-      musical,
+      new ReadMusicalDto(musical),
     );
   }
 }

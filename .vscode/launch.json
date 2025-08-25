@@ -14,7 +14,8 @@
       "args": ["${workspaceFolder}/src/main.ts"],
       "cwd": "${workspaceFolder}",
       "skipFiles": ["<node_internals>/**"],
-      "preLaunchTask": null
+      "preLaunchTask": null,
+      "console": "integratedTerminal"
     }
   ]
 }

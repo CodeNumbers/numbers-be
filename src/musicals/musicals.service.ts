@@ -1,45 +1,38 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Musical } from '../common/entities/musical.entity';
-import { CreateMusicalDto, ReadMusicalDto } from './musicals.dto';
+import { CreateMusicalDto } from './musicals.dto';
 import { getFirstChoseong } from 'src/common/utils/choseong';
-import { PostersService } from 'src/posters/posters.service';
 import { MusicalNumbersService } from 'src/musical-numbers/musical-numbers.service';
+import { Poster } from 'src/common/entities/poster.entity';
 
 @Injectable()
 export class MusicalsService {
   constructor(
     @InjectRepository(Musical)
     private readonly musicalsRepository: Repository<Musical>,
-    private readonly postersService: PostersService,
     private readonly musicalNumbersService: MusicalNumbersService,
   ) {}
 
-  async findMusicalById(id: number): Promise<ReadMusicalDto | null> {
+  async findMusicalById(id: number): Promise<Musical> {
     const musical = await this.musicalsRepository
       .createQueryBuilder('musical')
-      .leftJoin('musical.poster', 'poster')
-      .leftJoin('musical.numbers', 'number')
-      .leftJoin('number.actors', 'actor')
-      .select([
-        'musical.title',
-        'musical.synopsis',
-        'poster.imageUrl',
-        'number.act',
-        'number.order',
-        'number.title',
-        'number.videoUrl',
-        'actor.name',
-      ])
+      .leftJoinAndSelect('musical.poster', 'poster')
+      .leftJoinAndSelect('musical.numbers', 'number')
+      .leftJoinAndSelect('number.actors', 'actor')
       .where('musical.id = :id', { id })
       .orderBy('number.act', 'ASC')
       .orderBy('number.order', 'ASC')
       .getOne();
 
-    if (!musical) return null;
+    if (!musical) throw new NotFoundException();
 
-    return new ReadMusicalDto(musical);
+    return musical;
   }
 
   async isExistMusical(title: string) {
@@ -57,11 +50,6 @@ export class MusicalsService {
         musicalInfo.numbers,
       );
 
-    // Insert Poster
-    // S3 image upload : function needed
-    const imageUrl = 'sample.com';
-    const posterInstance = await this.postersService.createPoster(imageUrl);
-
     // Insert Musical
     const musicalInstance = this.musicalsRepository.create({
       title: musicalInfo.title,
@@ -70,13 +58,19 @@ export class MusicalsService {
       firstChoseong: getFirstChoseong(musicalInfo.title),
     });
 
-    // Add relationship :
-    //    musical.poster <> poster.id
-    //    musical.numbers <> numbers.id
-    musicalInstance.poster = posterInstance;
+    // Add relationship : musical.numbers <> numbers.id
     musicalInstance.numbers = musicalNumberInstances;
     await this.musicalsRepository.save(musicalInstance);
 
     return musicalInstance;
+  }
+
+  async makeRelationshipWithPoster(
+    musicalId: number,
+    poster: Poster,
+  ): Promise<void> {
+    const musical = await this.findMusicalById(musicalId);
+    musical.poster = poster;
+    await this.musicalsRepository.save(musical);
   }
 }

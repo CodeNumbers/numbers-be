@@ -21,18 +21,32 @@ class MusicalDto {
   }
 }
 
+export class CreateMusicalDto extends MusicalDto {
+  constructor(musicalData: Musical) {
+    super(musicalData);
+  }
+}
+
 export class ReadMusicalDto extends MusicalDto {
   @ApiProperty({ type: 'string' })
   imageUrl: string;
 
+  @ApiProperty({ type: 'number' })
+  views: number;
+
   constructor(musicalData: Musical) {
     super(musicalData);
     this.imageUrl = musicalData.poster.imageUrl;
+    this.views = musicalData.views;
   }
 }
 
-export class CreateMusicalDto extends MusicalDto {
+export class CreateMusicalResponseDto extends MusicalDto {
+  @ApiProperty({ type: 'number', description: '뮤지컬 ID' })
+  id: number;
+
   constructor(musicalData: Musical) {
     super(musicalData);
+    this.id = musicalData.id;
   }
 }

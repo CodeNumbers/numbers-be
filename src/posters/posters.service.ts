@@ -4,12 +4,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PosterDto } from './posters.dto';
 import { Poster } from '../common/entities/poster.entity';
 import { ChoseongFilterMap } from 'src/common/config/query-parameters';
+import { MusicalsService } from 'src/musicals/musicals.service';
 
 @Injectable()
 export class PostersService {
   constructor(
     @InjectRepository(Poster)
     private postersRepository: Repository<Poster>,
+    private musicalsService: MusicalsService,
   ) {}
 
   async findPostersByMode(mode: string, limit: number): Promise<PosterDto[]> {
@@ -26,7 +28,12 @@ export class PostersService {
       // Based on views
       const posters = await this.postersRepository
         .createQueryBuilder('poster')
-        .select(['musical.id', 'musical.title', 'poster.imageUrl'])
+        .select([
+          'musical.id',
+          'musical.title',
+          'musical.views',
+          'poster.imageUrl',
+        ])
         .leftJoin('poster.musical', 'musical')
         .orderBy('musical.views', 'DESC')
         .orderBy('musical.id', 'ASC')
@@ -54,16 +61,18 @@ export class PostersService {
 
   sortKoreanAsc(arr: PosterDto[]): PosterDto[] {
     return arr.sort((poster1, poster2) => {
-      const title1 = poster1.title;
-      const title2 = poster2.title;
+      const title1 = poster1.musicalTitle;
+      const title2 = poster2.musicalTitle;
       return title1.localeCompare(title2, 'ko');
     });
   }
 
-  async createPoster(imageUrl: string): Promise<Poster> {
-    const posterInstance = this.postersRepository.create({ imageUrl });
-    await this.postersRepository.save(posterInstance);
+  async createPoster(musicalId: number, imageUrl: string): Promise<Poster> {
+    const poster = this.postersRepository.create({ imageUrl });
+    await this.postersRepository.save(poster);
 
-    return posterInstance;
+    await this.musicalsService.makeRelationshipWithPoster(musicalId, poster);
+
+    return poster;
   }
 }
