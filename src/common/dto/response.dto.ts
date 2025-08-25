@@ -1,21 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class DeprecatedResponseDto<T> {
-  @ApiProperty()
-  statusCode: number;
-
-  @ApiProperty()
-  message: string;
-
-  data: T[];
-
-  constructor(statusCode: number, message: string, data: T[] | null = null) {
-    this.statusCode = statusCode;
-    this.message = message;
-    if (data) this.data = data.slice();
-  }
-}
-
 export class ResponseDtoInArray<T> {
   @ApiProperty()
   message: string;

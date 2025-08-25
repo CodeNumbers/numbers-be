@@ -2,24 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Musical } from 'src/common/entities/musical.entity';
 import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
 
-// For deprecated API
-export class MusicalPosterDto {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
-  title: string;
-
-  @ApiProperty()
-  poster: {
-    imageUrl: string;
-  };
-
-  constructor(musicalData: MusicalPosterDto) {
-    Object.assign(this, musicalData);
-  }
-}
-
 class MusicalDto {
   @ApiProperty({ type: 'string' })
   title: string;

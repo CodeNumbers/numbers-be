@@ -2,12 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Musical } from '../common/entities/musical.entity';
-import { ChoseongFilterMap } from 'src/common/config/query-parameters';
-import {
-  CreateMusicalDto,
-  MusicalPosterDto,
-  ReadMusicalDto,
-} from './musicals.dto';
+import { CreateMusicalDto, ReadMusicalDto } from './musicals.dto';
 import { getFirstChoseong } from 'src/common/utils/choseong';
 import { PostersService } from 'src/posters/posters.service';
 import { MusicalNumbersService } from 'src/musical-numbers/musical-numbers.service';
@@ -20,21 +15,6 @@ export class MusicalsService {
     private readonly postersService: PostersService,
     private readonly musicalNumbersService: MusicalNumbersService,
   ) {}
-
-  async findFilteredMusicals(
-    initialRange: string,
-  ): Promise<MusicalPosterDto[]> {
-    const musicals = await this.musicalsRepository
-      .createQueryBuilder('musical')
-      .leftJoin('musical.poster', 'poster')
-      .select(['musical.id', 'musical.title', 'poster.imageUrl'])
-      .where('musical.firstChoseong IN (:...choseongGroup)', {
-        choseongGroup: ChoseongFilterMap[initialRange],
-      })
-      .getMany();
-
-    return musicals.map((musical) => new MusicalPosterDto(musical));
-  }
 
   async findMusicalById(id: number): Promise<ReadMusicalDto | null> {
     const musical = await this.musicalsRepository
@@ -62,11 +42,12 @@ export class MusicalsService {
     return new ReadMusicalDto(musical);
   }
 
+  async isExistMusical(title: string) {
+    return this.musicalsRepository.findOneBy({ title });
+  }
+
   async createMusical(musicalInfo: CreateMusicalDto) {
-    const isExistMusical = await this.musicalsRepository.findOneBy({
-      title: musicalInfo.title,
-    });
-    if (isExistMusical) {
+    if (await this.isExistMusical(musicalInfo.title)) {
       throw new BadRequestException(`${musicalInfo.title} already created.`);
     }
 
@@ -77,7 +58,7 @@ export class MusicalsService {
       );
 
     // Insert Poster
-    // S3 image upload
+    // S3 image upload : function needed
     const imageUrl = 'sample.com';
     const posterInstance = await this.postersService.createPoster(imageUrl);
 
@@ -88,6 +69,10 @@ export class MusicalsService {
       numbers: musicalNumberInstances,
       firstChoseong: getFirstChoseong(musicalInfo.title),
     });
+
+    // Add relationship :
+    //    musical.poster <> poster.id
+    //    musical.numbers <> numbers.id
     musicalInstance.poster = posterInstance;
     musicalInstance.numbers = musicalNumberInstances;
     await this.musicalsRepository.save(musicalInstance);

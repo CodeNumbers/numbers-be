@@ -9,95 +9,18 @@ import {
 import {
   ApiQuery,
   ApiResponse,
-  ApiOkResponse,
   getSchemaPath,
   ApiExtraModels,
   ApiOperation,
 } from '@nestjs/swagger';
 import { PostersService } from './posters.service';
-import {
-  DeprecatedResponseDto,
-  ResponseDtoInArray,
-} from 'src/common/dto/response.dto';
-import { success } from 'src/common/utils/response.util';
-import { isValidQuery } from 'src/common/utils/validation.util';
-import {
-  PosterSearchKeyword,
-  PosterFilterKeyword,
-} from 'src/common/config/query-parameters';
+import { ResponseDtoInArray } from 'src/common/dto/response.dto';
 import { PosterDto } from './posters.dto';
 
 @Controller('posters')
 export class PostersController {
   constructor(private readonly postersService: PostersService) {}
-  @ApiExtraModels(DeprecatedResponseDto, ResponseDtoInArray, PosterDto)
-
-  // Deprecated
-  @Get('search')
-  @ApiOperation({ deprecated: true })
-  @ApiQuery({ name: 'select', enum: ['random', 'views'] })
-  @ApiOkResponse({
-    description: 'Success to get poster list.',
-    schema: {
-      allOf: [
-        { $ref: getSchemaPath(DeprecatedResponseDto) },
-        {
-          properties: {
-            data: {
-              type: 'array',
-              items: { $ref: getSchemaPath(PosterDto) },
-            },
-          },
-        },
-      ],
-    },
-  })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
-  async getPosters(
-    @Query('select') select: string,
-  ): Promise<DeprecatedResponseDto<PosterDto> | BadRequestException> {
-    if (!isValidQuery(select, PosterSearchKeyword)) {
-      throw new BadRequestException();
-    }
-    const posters = await this.postersService.findPostersByMode(select, 5);
-    return success(posters, 'Success to get poster list.');
-  }
-
-  @Get('filter')
-  @ApiOperation({ deprecated: true })
-  @ApiQuery({
-    name: 'initialRange',
-    enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
-  })
-  @ApiExtraModels(DeprecatedResponseDto, PosterDto)
-  @ApiOkResponse({
-    description: 'Success to get filtered poster list.',
-    schema: {
-      allOf: [
-        { $ref: getSchemaPath(DeprecatedResponseDto) },
-        {
-          properties: {
-            data: {
-              type: 'array',
-              items: { $ref: getSchemaPath(PosterDto) },
-            },
-          },
-        },
-      ],
-    },
-  })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
-  async filterPosters(
-    @Query('initialRange') initialRange: string,
-  ): Promise<DeprecatedResponseDto<PosterDto> | BadRequestException> {
-    if (!isValidQuery(initialRange, PosterFilterKeyword)) {
-      throw new BadRequestException();
-    }
-
-    const posters =
-      await this.postersService.findPostersByInitialRange(initialRange);
-    return success(posters, 'Success to get filtered poster list.');
-  }
+  @ApiExtraModels(ResponseDtoInArray, PosterDto)
 
   // GET /posters
   @Get()

@@ -31,6 +31,8 @@ export class MusicalNumbersService {
         title: musicalNumber.title,
         videoUrl: musicalNumber.videoUrl,
       });
+
+      // Add relationship : musical_number.actors <> actor.id
       musicalNumberInstance.actors = actorInstances;
       await this.musicalNumbersRepository.save(musicalNumberInstance);
 

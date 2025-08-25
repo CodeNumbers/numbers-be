@@ -8,7 +8,6 @@ import {
   NotFoundException,
   Param,
   Post,
-  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,75 +17,19 @@ import {
   ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
 import { MusicalsService } from './musicals.service';
-import {
-  DeprecatedResponseDto,
-  ResponseDto,
-} from 'src/common/dto/response.dto';
-import { isValidQuery } from 'src/common/utils/validation.util';
-import { PosterFilterKeyword } from 'src/common/config/query-parameters';
-import {
-  ReadMusicalDto,
-  MusicalPosterDto,
-  CreateMusicalDto,
-} from './musicals.dto';
+import { ResponseDto } from 'src/common/dto/response.dto';
+import { ReadMusicalDto, CreateMusicalDto } from './musicals.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
 
 @Controller('musicals')
 export class MusicalsController {
   constructor(private readonly musicalsService: MusicalsService) {}
-  @ApiExtraModels(
-    DeprecatedResponseDto,
-    ResponseDto,
-    MusicalPosterDto,
-    CreateMusicalDto,
-    ReadMusicalDto,
-  )
-
-  // Deprecated
-  @Get('filter')
-  @ApiOperation({ deprecated: true })
-  @ApiQuery({
-    name: 'initialRange',
-    enum: ['ㄱ~ㄷ', 'ㄹ~ㅂ', 'ㅅ~ㅈ', 'ㅊ~ㅌ', 'ㅍ~ㅎ', 'A~Z/0~9'],
-  })
-  @ApiOkResponse({
-    description: 'Success to get filtered poster list.',
-    schema: {
-      allOf: [
-        { $ref: getSchemaPath(DeprecatedResponseDto) },
-        {
-          properties: {
-            data: {
-              type: 'array',
-              items: { $ref: getSchemaPath(MusicalPosterDto) },
-            },
-          },
-        },
-      ],
-    },
-  })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request.' })
-  async filterPosters(
-    @Query('initialRange') initialRange: string,
-  ): Promise<DeprecatedResponseDto<MusicalPosterDto> | BadRequestException> {
-    if (!isValidQuery(initialRange, PosterFilterKeyword)) {
-      throw new BadRequestException();
-    }
-
-    const musicals =
-      await this.musicalsService.findFilteredMusicals(initialRange);
-    return new DeprecatedResponseDto(
-      HttpStatus.OK,
-      'Success to get filtered poster list.',
-      musicals,
-    );
-  }
+  @ApiExtraModels(ResponseDto, CreateMusicalDto, ReadMusicalDto)
 
   // POST /musicals
   @Post()
