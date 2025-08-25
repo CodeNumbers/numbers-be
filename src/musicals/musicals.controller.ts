@@ -8,8 +8,10 @@ import {
   NotFoundException,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiExtraModels,
   ApiOkResponse,
@@ -24,6 +26,7 @@ import {
   CreateMusicalDto,
   CreateMusicalResponseDto,
 } from './musicals.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('musicals')
 export class MusicalsController {
@@ -33,10 +36,13 @@ export class MusicalsController {
   // POST /musicals
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(JwtAuthGuard)
 
   // Swagger
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: '뮤지컬 정보 생성',
+    description: 'POST /poster 전에 실행돼야 함.',
   })
   @ApiBody({
     schema: {
@@ -90,11 +96,19 @@ export class MusicalsController {
       ],
     },
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Musical already created.',
+  })
 
   // Function
   async createMusicalInformation(
     @Body() musicalInfo: CreateMusicalDto,
   ): Promise<ResponseDto<CreateMusicalDto>> {
+    if (await this.musicalsService.isExistMusical(musicalInfo.title)) {
+      throw new BadRequestException(`${musicalInfo.title} already created.`);
+    }
+
     const musical = await this.musicalsService.createMusical(musicalInfo);
 
     return new ResponseDto(

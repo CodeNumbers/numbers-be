@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Musical } from '../common/entities/musical.entity';
@@ -39,11 +35,7 @@ export class MusicalsService {
     return this.musicalsRepository.findOneBy({ title });
   }
 
-  async createMusical(musicalInfo: CreateMusicalDto) {
-    if (await this.isExistMusical(musicalInfo.title)) {
-      throw new BadRequestException(`${musicalInfo.title} already created.`);
-    }
-
+  async createMusical(musicalInfo: CreateMusicalDto): Promise<Musical> {
     // Insert Actor & Numbers
     const musicalNumberInstances =
       await this.musicalNumbersService.createMusicalNumbers(

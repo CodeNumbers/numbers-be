@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -17,6 +18,8 @@ import {
   ApiOperation,
   ApiBody,
   ApiConsumes,
+  ApiOkResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import * as fs from 'fs';
 import { PostersService } from './posters.service';
@@ -24,17 +27,24 @@ import { ResponseDto, ResponseDtoInArray } from 'src/common/dto/response.dto';
 import { CreatePosterDto, PosterDto } from './posters.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { extname, join } from 'path';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('posters')
 export class PostersController {
   constructor(private readonly postersService: PostersService) {}
-  @ApiExtraModels(ResponseDtoInArray, PosterDto)
+  @ApiExtraModels(ResponseDtoInArray, PosterDto, CreatePosterDto)
 
   // POST /posters
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseGuards(JwtAuthGuard)
 
   // Swagger
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '포스터 파일 S3 업로드',
+    description: 'POST /musicals 후에 실행돼야 함.',
+  })
   @ApiQuery({ name: 'musicalId', description: '뮤지컬 ID' })
   @ApiQuery({ name: 'musicalTitle', description: '뮤지컬 제목' })
   @ApiConsumes('multipart/form-data')
@@ -49,6 +59,19 @@ export class PostersController {
     },
   })
   @UseInterceptors(FileInterceptor('posterFile'))
+  @ApiOkResponse({
+    description: 'Success to create poster.',
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(ResponseDto) },
+        {
+          properties: {
+            data: { $ref: getSchemaPath(CreatePosterDto) },
+          },
+        },
+      ],
+    },
+  })
 
   // Function
   async uploadPoster(
