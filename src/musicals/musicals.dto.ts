@@ -34,9 +34,9 @@ export class ReadMusicalDto extends MusicalDto {
   @ApiProperty({ type: 'number' })
   views: number;
 
-  constructor(musicalData: Musical) {
+  constructor(musicalData: Musical, imageUrl: string) {
     super(musicalData);
-    this.imageUrl = musicalData.poster.imageUrl;
+    this.imageUrl = imageUrl;
     this.views = musicalData.views;
   }
 }

@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Post,
   UseGuards,
@@ -27,10 +26,14 @@ import {
   CreateMusicalResponseDto,
 } from './musicals.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { S3Service } from 'src/common/s3/s3.service';
 
 @Controller('musicals')
 export class MusicalsController {
-  constructor(private readonly musicalsService: MusicalsService) {}
+  constructor(
+    private readonly musicalsService: MusicalsService,
+    private readonly s3Service: S3Service,
+  ) {}
   @ApiExtraModels(ResponseDto, CreateMusicalDto, ReadMusicalDto)
 
   // POST /musicals
@@ -148,16 +151,17 @@ export class MusicalsController {
   // Function
   async getMusicalInformationWithId(
     @Param('id') id: number,
-  ): Promise<
-    ResponseDto<ReadMusicalDto> | BadRequestException | NotFoundException
-  > {
+  ): Promise<ResponseDto<ReadMusicalDto>> {
     if (isNaN(Number(id))) throw new BadRequestException();
 
     const musical = await this.musicalsService.findMusicalById(Number(id));
+    const imageUrl = this.s3Service.parseImageKeyToImageUrl(
+      musical.poster.imageKey,
+    );
 
     return new ResponseDto(
       'Success to get musical information by ID.',
-      new ReadMusicalDto(musical),
+      new ReadMusicalDto(musical, imageUrl),
     );
   }
 }

@@ -26,7 +26,7 @@ export class MusicalsService {
       .orderBy('number.order', 'ASC')
       .getOne();
 
-    if (!musical) throw new NotFoundException();
+    if (!musical) throw new NotFoundException('Musical not found');
 
     return musical;
   }

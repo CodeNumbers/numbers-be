@@ -42,4 +42,23 @@ export class S3Service {
 
     await this.s3Client.send(command);
   }
+
+  parseImageKeyToImageUrl(imageKey: string): string {
+    const cloundFrontDomain = this.configService.get<string>(
+      'AWS_CLOUD_FRONT_DOMAIN',
+    );
+
+    if (!cloundFrontDomain)
+      throw new Error('Environment variable AWS_CLOUD_FRONT_DOMAIN required.');
+
+    const splitedImageKey = imageKey.split('-');
+    const encodedImageKey =
+      splitedImageKey[0] +
+      '-' +
+      splitedImageKey[1].normalize('NFC') +
+      '-' +
+      splitedImageKey[2];
+
+    return `${cloundFrontDomain}/${encodeURIComponent(encodedImageKey)}`;
+  }
 }

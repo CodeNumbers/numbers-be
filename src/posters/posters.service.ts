@@ -6,7 +6,7 @@ import { Poster } from '../common/entities/poster.entity';
 import { ChoseongFilterMap } from 'src/common/config/query-parameters';
 import { MusicalsService } from 'src/musicals/musicals.service';
 import { extname } from 'path';
-import { S3Service } from './s3.service';
+import { S3Service } from '../common/s3/s3.service';
 import { Musical } from 'src/common/entities/musical.entity';
 
 @Injectable()
@@ -19,45 +19,51 @@ export class PostersService {
   ) {}
 
   async findPostersByMode(mode: string, limit: number): Promise<PosterDto[]> {
+    let posters: Poster[];
     if (mode === 'random') {
-      const posters = await this.postersRepository
+      posters = await this.postersRepository
         .createQueryBuilder('poster')
-        .select(['musical.id', 'musical.title', 'poster.imageUrl'])
+        .select(['musical.id', 'musical.title', 'poster.imageKey'])
         .leftJoin('poster.musical', 'musical')
         .orderBy('RAND()')
         .limit(limit)
         .getMany();
-      return posters.map((poster) => new PosterDto(poster));
     } else {
       // Based on views
-      const posters = await this.postersRepository
+      posters = await this.postersRepository
         .createQueryBuilder('poster')
         .select([
           'musical.id',
           'musical.title',
           'musical.views',
-          'poster.imageUrl',
+          'poster.imageKey',
         ])
         .leftJoin('poster.musical', 'musical')
         .orderBy('musical.views', 'DESC')
         .orderBy('musical.id', 'ASC')
         .limit(limit)
         .getMany();
-      return posters.map((poster) => new PosterDto(poster));
     }
+    return posters.map((poster) => {
+      const imageUrl = this.s3Service.parseImageKeyToImageUrl(poster.imageKey);
+      return new PosterDto(poster, imageUrl);
+    });
   }
 
   async findPostersByInitialRange(initialRange: string): Promise<PosterDto[]> {
     const posters = await this.postersRepository
       .createQueryBuilder('poster')
-      .select(['musical.id', 'musical.title', 'poster.imageUrl'])
+      .select(['musical.id', 'musical.title', 'poster.imageKey'])
       .leftJoin('poster.musical', 'musical')
       .where('musical.firstChoseong IN (:...choseongGroup)', {
         choseongGroup: ChoseongFilterMap[initialRange],
       })
       .getMany();
 
-    let postersInDto = posters.map((poster) => new PosterDto(poster));
+    let postersInDto = posters.map((poster) => {
+      const imageUrl = this.s3Service.parseImageKeyToImageUrl(poster.imageKey);
+      return new PosterDto(poster, imageUrl);
+    });
     postersInDto = this.sortKoreanAsc(postersInDto);
 
     return postersInDto;
@@ -86,7 +92,7 @@ export class PostersService {
     );
 
     // Create poster in database
-    const poster = this.postersRepository.create({ imageUrl: imageKey });
+    const poster = this.postersRepository.create({ imageKey });
     await this.postersRepository.save(poster);
 
     // Make relationship with musical
