@@ -8,6 +8,7 @@ import { MusicalsService } from 'src/musicals/musicals.service';
 import { extname } from 'path';
 import { S3Service } from '../common/s3/s3.service';
 import { Musical } from 'src/common/entities/musical.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class PostersService {
@@ -108,6 +109,6 @@ export class PostersService {
       .toString()
       .padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}`;
 
-    return `${musical.id}-${musical.title}-${formattedDate}${ext}`;
+    return `posters/${musical.id}/${formattedDate}/${uuidv4()}${ext}`;
   }
 }

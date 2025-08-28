@@ -7,7 +7,7 @@ export const MusicalData: {
 }[] = [
   {
     title: '데스노트',
-    imageKey: '1-데스노트.jpeg',
+    imageKey: '1.jpeg',
     numbers: [
       {
         act: 1,
@@ -48,7 +48,7 @@ export const MusicalData: {
   },
   {
     title: '레베카',
-    imageKey: '2-레베카.jpeg',
+    imageKey: '2.jpeg',
     numbers: [
       {
         act: 2,
@@ -68,34 +68,34 @@ export const MusicalData: {
   },
   {
     title: '알라딘',
-    imageKey: '3-알라딘.jpeg',
+    imageKey: '3.jpeg',
   },
   {
     title: '지킬앤하이드',
-    imageKey: '4-지킬앤하이드.jpeg',
+    imageKey: '4.jpeg',
   },
   {
     title: '프랑켄슈타인',
-    imageKey: '5-프랑켄슈타인.jpeg',
+    imageKey: '5.jpeg',
   },
   {
     title: '하데스타운',
-    imageKey: '6-하데스타운.jpeg',
+    imageKey: '6.jpeg',
   },
   {
     title: '웃는 남자',
-    imageKey: '7-웃는남자.jpeg',
+    imageKey: '7.jpeg',
   },
   {
     title: '스토리 오브 마이 라이프',
-    imageKey: '8-스토리오브마이라이프.jpeg',
+    imageKey: '8.jpeg',
   },
   {
     title: '위키드',
-    imageKey: '9-위키드.jpeg',
+    imageKey: '9.jpeg',
   },
   {
     title: '어쩌면 해피엔딩',
-    imageKey: '10-어쩌면해피엔딩.jpeg',
+    imageKey: '10.jpeg',
   },
 ];

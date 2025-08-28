@@ -51,14 +51,6 @@ export class S3Service {
     if (!cloundFrontDomain)
       throw new Error('Environment variable AWS_CLOUD_FRONT_DOMAIN required.');
 
-    const splitedImageKey = imageKey.split('-');
-    const encodedImageKey =
-      splitedImageKey[0] +
-      '-' +
-      splitedImageKey[1].normalize('NFC') +
-      '-' +
-      splitedImageKey[2];
-
-    return `${cloundFrontDomain}/${encodeURIComponent(encodedImageKey)}`;
+    return `${cloundFrontDomain}/${imageKey}`;
   }
 }
