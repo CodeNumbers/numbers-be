@@ -26,7 +26,7 @@ export class MusicalsService {
       .orderBy('number.order', 'ASC')
       .getOne();
 
-    if (!musical) throw new NotFoundException();
+    if (!musical) throw new NotFoundException('Musical not found');
 
     return musical;
   }
@@ -58,10 +58,9 @@ export class MusicalsService {
   }
 
   async makeRelationshipWithPoster(
-    musicalId: number,
+    musical: Musical,
     poster: Poster,
   ): Promise<void> {
-    const musical = await this.findMusicalById(musicalId);
     musical.poster = poster;
     await this.musicalsRepository.save(musical);
   }

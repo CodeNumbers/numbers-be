@@ -26,11 +26,11 @@ export class MusicalSeeder {
     for (let index = 0; index < count; index++) {
       const title = MusicalData[index].title;
       const firstChoseong = getFirstChoseong(title);
-      const imageUrl = MusicalData[index].imageUrl;
+      const imageKey = MusicalData[index].imageKey;
       const synopsis = faker.lorem.paragraph();
 
       // Insert Poster
-      const posterInstance = this.posterRepo.create({ imageUrl });
+      const posterInstance = this.posterRepo.create({ imageKey: imageKey });
       await this.posterRepo.save(posterInstance);
 
       // Insert Musical

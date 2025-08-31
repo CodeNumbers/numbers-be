@@ -2,13 +2,12 @@ import { MusicalNumbersDto } from 'src/musical-numbers/musical-numbers.dto';
 
 export const MusicalData: {
   title: string;
-  imageUrl: string;
+  imageKey: string;
   numbers?: MusicalNumbersDto[];
 }[] = [
   {
     title: '데스노트',
-    imageUrl:
-      'https://ticketimage.interpark.com/Play/image/large/23/23002291_p.gif',
+    imageKey: '1.jpeg',
     numbers: [
       {
         act: 1,
@@ -49,8 +48,7 @@ export const MusicalData: {
   },
   {
     title: '레베카',
-    imageUrl:
-      'https://ticketimage.interpark.com/Play/image/large/23/23008837_p.gif',
+    imageKey: '2.jpeg',
     numbers: [
       {
         act: 2,
@@ -70,42 +68,34 @@ export const MusicalData: {
   },
   {
     title: '알라딘',
-    imageUrl:
-      'https://ticketimage.interpark.com/Play/image/large/24/24012498_p.gif',
+    imageKey: '3.jpeg',
   },
   {
     title: '지킬앤하이드',
-    imageUrl:
-      'https://ticketimage.interpark.com/Play/image/large/24/24013928_p.gif',
+    imageKey: '4.jpeg',
   },
   {
     title: '프랑켄슈타인',
-    imageUrl:
-      'https://image.yes24.com/themusical/fileStorage/ThemusicalAdmin/Play/Image/2023101938920458f86986298757ce2d5e31430e590ecd0e.png',
+    imageKey: '5.jpeg',
   },
   {
     title: '하데스타운',
-    imageUrl:
-      'https://ticketimage.interpark.com/Play/image/large/24/24006851_p.gif',
+    imageKey: '6.jpeg',
   },
   {
     title: '웃는 남자',
-    imageUrl:
-      'https://ticketimage.interpark.com/Play/image/large/22/22004761_p.gif',
+    imageKey: '7.jpeg',
   },
   {
     title: '스토리 오브 마이 라이프',
-    imageUrl:
-      'https://www.doosanartcenter.com/upload/contentsImage/23092714074648862148.jpg',
+    imageKey: '8.jpeg',
   },
   {
     title: '위키드',
-    imageUrl:
-      'https://ticketimage.interpark.com/Play/image/large/25/25005777_p.gif',
+    imageKey: '9.jpeg',
   },
   {
     title: '어쩌면 해피엔딩',
-    imageUrl:
-      'https://ticketimage.interpark.com/Play/image/large/24/24006741_p.gif',
+    imageKey: '10.jpeg',
   },
 ];
